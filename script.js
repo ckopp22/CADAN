@@ -16,7 +16,25 @@ console.log("CADAN loaded");
 })();
 
 // Screen switching
+function loadJSON(key, fallback) {
+  try {
+    const v = JSON.parse(localStorage.getItem(key));
+    return v === null ? fallback : v;
+  } catch (e) { return fallback; }
+}
+function saveJSON(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* storage unavailable */ }
+}
+
+function renderLeaderboard() {
+  const results = loadJSON("cadan-leaderboard", []);
+  document.getElementById("leaderboard-list").innerHTML = results.length
+    ? results.map((r) => '<div class="chip standing">' + r.name + " <small>" + r.date + "</small><b>" + r.score + "</b></div>").join("")
+    : "<p>No games saved yet.</p>";
+}
+
 function showScreen(id) {
+  if (id === "leaderboards") renderLeaderboard();
   document.querySelectorAll(".screen").forEach((s) => s.classList.toggle("active", s.id === id));
 }
 document.querySelectorAll("[data-go]").forEach((b) =>
@@ -26,10 +44,12 @@ document.querySelectorAll("[data-go]").forEach((b) =>
 (function () {
   const names = document.getElementById("names");
   const count = document.getElementById("count");
-  let n = 1;
+  const saved = loadJSON("cadan-setup", { count: 1, names: [] });
+  let n = Math.min(6, Math.max(1, saved.count || 1));
   function render() {
     count.textContent = n;
-    const old = Array.from(names.querySelectorAll("input")).map((i) => i.value);
+    const current = Array.from(names.querySelectorAll("input")).map((i) => i.value);
+    const old = current.length ? current : saved.names || [];
     names.innerHTML = "";
     for (let i = 0; i < n; i++) {
       const input = document.createElement("input");
@@ -296,6 +316,7 @@ function renderPlay() {
 
 document.getElementById("start").addEventListener("click", () => {
   const inputs = document.querySelectorAll("#names input");
+  saveJSON("cadan-setup", { count: inputs.length, names: Array.from(inputs).map((i) => i.value.trim()) });
   state.players = Array.from(inputs).map((input, i) => ({
     id: "p" + (i + 1),
     name: input.value.trim() || "Player " + (i + 1),
@@ -325,6 +346,16 @@ function showScorecard() {
     return '<div class="chip standing' + (p.score === top ? " active" : "") + '">' + rank + ". " + p.name +
       "<b>" + p.score + "</b>" + (p.xCount ? " <small>(" + p.xCount + " X)</small>" : "") + "</div>";
   }).join("");
+  const saveBtn = document.getElementById("save-result");
+  saveBtn.disabled = false;
+  saveBtn.textContent = "Save to Leaderboard";
+  saveBtn.onclick = () => {
+    const date = new Date().toLocaleDateString();
+    const results = loadJSON("cadan-leaderboard", []);
+    saveJSON("cadan-leaderboard", ranked.map((p) => ({ name: p.name, score: p.score, date })).concat(results));
+    saveBtn.disabled = true;
+    saveBtn.textContent = "Saved";
+  };
   showScreen("scorecard");
 }
 
