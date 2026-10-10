@@ -45,7 +45,7 @@ document.querySelectorAll("[data-go]").forEach((b) =>
 
 // Game state and turn shell
 const state = { players: [], currentPlayerIndex: 0, turnNumber: 1, soundOn: true,
-  dice: [], rollCount: 0, stopped: false, rolling: false };
+  dice: [], rollCount: 0, stopped: false, rolling: false, spent: {} };
 
 const DIE_ICONS = { BRICK: "\u{1F9F1}", LUMBER: "\u{1FAB5}", WOOL: "\u{1F411}", GRAIN: "\u{1F33E}", ORE: "\u{1FAA8}", GOLD: "\u{1FA99}" };
 
@@ -54,6 +54,8 @@ function resetDice() {
   state.rollCount = 0;
   state.stopped = false;
   state.rolling = false;
+  state.spent = {};
+  setMessage("");
 }
 
 function randomFace() {
@@ -81,6 +83,7 @@ function countDice() {
   const counts = {};
   CONSTANTS.dieFaces.forEach((f) => { counts[f] = 0; });
   state.dice.forEach((d) => { if (d.value && !d.spent) counts[d.value]++; });
+  Object.keys(state.spent).forEach((f) => { counts[f] -= state.spent[f]; });
   return counts;
 }
 
@@ -191,6 +194,41 @@ function renderMap(player) {
   });
   document.getElementById("map").innerHTML = svg + "</svg>";
 }
+
+function setMessage(text) {
+  document.getElementById("message").textContent = text;
+}
+
+function rollingOver() {
+  return state.rollCount > 0 && (state.stopped || state.rollCount >= CONSTANTS.maxRollsPerTurn);
+}
+
+function buildSlot(slotId) {
+  const player = state.players[state.currentPlayerIndex];
+  const slot = ISLAND_ONE.buildSlots.find((s) => s.id === slotId);
+  if (!slot || state.turnNumber > CONSTANTS.turnsPerPlayer) return;
+  if (!rollingOver()) return setMessage("Finish rolling before building.");
+  const st = slotState(player, slot);
+  if (st === "built") return;
+  if (st === "locked") return setMessage("That slot is locked: build in ascending order, next to a built road.");
+  const cost = CONSTANTS.buildCosts[slot.type];
+  const counts = countDice();
+  const missing = Object.keys(cost).filter((r) => counts[r.toUpperCase()] < cost[r]);
+  if (missing.length) return setMessage("Not enough resources for a " + slot.type + ".");
+  Object.keys(cost).forEach((r) => {
+    const f = r.toUpperCase();
+    state.spent[f] = (state.spent[f] || 0) + cost[r];
+  });
+  player.builtSlotIds.push(slot.id);
+  player.score += slot.pointValue;
+  setMessage("Built " + slot.type + " for " + slot.pointValue + " point" + (slot.pointValue === 1 ? "" : "s") + ".");
+  renderPlay();
+}
+
+document.getElementById("map").addEventListener("click", (e) => {
+  const el = e.target.closest("[data-slot]");
+  if (el) buildSlot(el.dataset.slot);
+});
 
 function renderPlay() {
   const done = state.turnNumber > CONSTANTS.turnsPerPlayer;

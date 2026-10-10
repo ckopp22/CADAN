@@ -157,3 +157,6 @@ button.die.spent { opacity: 0.3; }
 #map g.buildable rect { fill: #f4d03f; stroke: var(--red); stroke-width: 10; }
 #map g.built rect { fill: #2f5d3a; stroke: var(--gold); stroke-width: 6; }
 #map g.built text { fill: #f1e3c0; }
+
+#map .slot { cursor: pointer; }
+#message { min-height: 1.4em; margin: 0 0 0.8rem; font-weight: 700; color: var(--red); }
