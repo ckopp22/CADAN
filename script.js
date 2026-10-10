@@ -261,7 +261,7 @@ keyBtn.addEventListener("click", () => {
 
 function renderMap(player) {
   const L = ISLAND_ONE.layout, V = L.vertices, r = L.hexRadius;
-  let svg = '<svg viewBox="20 600 960 1000" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="1000" height="1700" fill="#8fc1d4"/>';
+  let svg = '<svg viewBox="20 520 960 1080" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="1000" height="1700" fill="#8fc1d4"/>';
   ISLAND_ONE.hexes.forEach((h) => {
     const [cx, cy] = L.hexCenters[h.id];
     svg += '<image href="icons/tile-' + h.resource.toLowerCase() + '.png" x="' + (cx - r) + '" y="' + (cy - r * 0.866).toFixed(0) +

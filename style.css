@@ -186,7 +186,6 @@ button.die { background: #fbf3dc; }
 
 .turn-head { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.4rem; }
 .turn-head h2 { flex: 1; margin: 0; }
-button#key-btn { width: 48px; min-height: 48px; margin: 0; padding: 0; flex: none; clip-path: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 #key-panel { margin: 0.5rem 0 0.8rem; padding: 0.5rem 0.7rem; text-align: left; background: #fbf3dc; border: 2px solid var(--gold); border-radius: 8px; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25); }
 #key-panel[hidden] { display: none; }
 .key-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0; }
@@ -210,4 +209,21 @@ button#key-btn { width: 48px; min-height: 48px; margin: 0; padding: 0; flex: non
   border: 2px solid var(--ink);
   border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+button#key-btn {
+  position: absolute;
+  top: 0.4rem;
+  left: 0.4rem;
+  width: 32px;
+  min-height: 32px;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  clip-path: none;
+  border-radius: 50%;
+  border-width: 1.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
