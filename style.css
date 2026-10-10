@@ -163,3 +163,6 @@ button.die.spent { opacity: 0.3; }
 
 #jokers { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.5rem; }
 #jokers button.trade-btn { width: auto; flex: 1 1 28%; }
+
+#winner { font-size: 1.3rem; font-weight: 700; color: var(--green); }
+#standings .chip { display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 1rem; }

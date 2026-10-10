@@ -45,7 +45,7 @@ document.querySelectorAll("[data-go]").forEach((b) =>
 
 // Game state and turn shell
 const state = { players: [], currentPlayerIndex: 0, turnNumber: 1, soundOn: true,
-  dice: [], rollCount: 0, stopped: false, rolling: false, spent: {}, jokerPending: null };
+  dice: [], rollCount: 0, stopped: false, rolling: false, spent: {}, jokerPending: null, builtThisTurn: 0 };
 
 const DIE_ICONS = { BRICK: "\u{1F9F1}", LUMBER: "\u{1FAB5}", WOOL: "\u{1F411}", GRAIN: "\u{1F33E}", ORE: "\u{1FAA8}", GOLD: "\u{1FA99}" };
 
@@ -56,6 +56,7 @@ function resetDice() {
   state.rolling = false;
   state.spent = {};
   state.jokerPending = null;
+  state.builtThisTurn = 0;
   setMessage("");
 }
 
@@ -269,6 +270,7 @@ function buildSlot(slotId) {
   });
   player.builtSlotIds.push(slot.id);
   player.score += slot.pointValue;
+  state.builtThisTurn++;
   setMessage("Built " + slot.type + " for " + slot.pointValue + " point" + (slot.pointValue === 1 ? "" : "s") + ".");
   renderPlay();
 }
@@ -310,13 +312,39 @@ document.getElementById("start").addEventListener("click", () => {
   showScreen("play");
 });
 
+function showScorecard() {
+  const ranked = state.players.slice().sort((a, b) => b.score - a.score);
+  const top = ranked[0].score;
+  const winners = ranked.filter((p) => p.score === top);
+  document.getElementById("winner").textContent = winners.length === 1
+    ? winners[0].name + " wins!"
+    : "Tie: " + winners.map((p) => p.name).join(" & ");
+  let rank = 0;
+  document.getElementById("standings").innerHTML = ranked.map((p, i) => {
+    if (i === 0 || p.score !== ranked[i - 1].score) rank = i + 1;
+    return '<div class="chip standing' + (p.score === top ? " active" : "") + '">' + rank + ". " + p.name +
+      "<b>" + p.score + "</b>" + (p.xCount ? " <small>(" + p.xCount + " X)</small>" : "") + "</div>";
+  }).join("");
+  showScreen("scorecard");
+}
+
+document.getElementById("end-game").addEventListener("click", () => {
+  if (confirm("End the game now and show the final standings?")) showScorecard();
+});
+
 document.getElementById("end-turn").addEventListener("click", () => {
-  state.players[state.currentPlayerIndex].turnsTaken++;
+  const player = state.players[state.currentPlayerIndex];
+  if (state.builtThisTurn === 0) {
+    player.xCount++;
+    player.score += CONSTANTS.xPenalty;
+  }
+  player.turnsTaken++;
   state.currentPlayerIndex++;
   if (state.currentPlayerIndex >= state.players.length) {
     state.currentPlayerIndex = 0;
     state.turnNumber++;
   }
+  if (state.turnNumber > CONSTANTS.turnsPerPlayer) return showScorecard();
   resetDice();
   renderPlay();
 });
