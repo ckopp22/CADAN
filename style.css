@@ -218,3 +218,5 @@ button.die { background: #fbf3dc; }
   left: 1.1cqw;
   pointer-events: none;
 }
+
+#map rect.hit { fill: transparent; cursor: pointer; }
