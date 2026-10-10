@@ -89,6 +89,7 @@ function rollDice() {
   if (state.dice.every((d) => d.kept)) return;
   state.rolling = true;
   state.rollCount++;
+  playSound("roll");
   let ticks = 0;
   const timer = setInterval(() => {
     state.dice.forEach((d) => { if (!d.kept) d.value = randomFace(); });
@@ -264,6 +265,48 @@ function renderMap(player) {
   document.getElementById("map").innerHTML = svg + "</svg>";
 }
 
+// Sound effects (Web Audio, no files) and the persistent sound toggle
+state.soundOn = loadJSON("cadan-sound", true) !== false;
+let audioCtx = null;
+const SOUNDS = {
+  roll: [[300, 0], [450, 0.06], [350, 0.12], [500, 0.18]],
+  build: [[440, 0], [660, 0.12]],
+  turnEnd: [[260, 0], [200, 0.12]],
+  win: [[523, 0], [659, 0.15], [784, 0.3], [1047, 0.45]]
+};
+
+function playSound(name) {
+  if (!state.soundOn) return;
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const t0 = audioCtx.currentTime;
+    SOUNDS[name].forEach(([freq, at]) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = name === "roll" ? "square" : "triangle";
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.15, t0 + at);
+      gain.gain.exponentialRampToValueAtTime(0.001, t0 + at + 0.12);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(t0 + at);
+      osc.stop(t0 + at + 0.13);
+    });
+  } catch (e) { /* audio unavailable */ }
+}
+
+function renderSoundToggles() {
+  document.querySelectorAll(".sound-toggle").forEach((b) => {
+    b.textContent = "Sound: " + (state.soundOn ? "On" : "Off");
+  });
+}
+document.querySelectorAll(".sound-toggle").forEach((b) => b.addEventListener("click", () => {
+  state.soundOn = !state.soundOn;
+  saveJSON("cadan-sound", state.soundOn);
+  renderSoundToggles();
+  playSound("build");
+}));
+renderSoundToggles();
+
 function setMessage(text) {
   document.getElementById("message").textContent = text;
 }
@@ -291,6 +334,7 @@ function buildSlot(slotId) {
   player.builtSlotIds.push(slot.id);
   player.score += slot.pointValue;
   state.builtThisTurn++;
+  playSound("build");
   setMessage("Built " + slot.type + " for " + slot.pointValue + " point" + (slot.pointValue === 1 ? "" : "s") + ".");
   renderPlay();
 }
@@ -337,6 +381,7 @@ function showScorecard() {
   const ranked = state.players.slice().sort((a, b) => b.score - a.score);
   const top = ranked[0].score;
   const winners = ranked.filter((p) => p.score === top);
+  playSound("win");
   document.getElementById("winner").textContent = winners.length === 1
     ? winners[0].name + " wins!"
     : "Tie: " + winners.map((p) => p.name).join(" & ");
@@ -370,6 +415,7 @@ document.getElementById("end-turn").addEventListener("click", () => {
     player.score += CONSTANTS.xPenalty;
   }
   player.turnsTaken++;
+  playSound("turnEnd");
   state.currentPlayerIndex++;
   if (state.currentPlayerIndex >= state.players.length) {
     state.currentPlayerIndex = 0;
