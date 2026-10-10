@@ -269,7 +269,7 @@ function renderMap(player) {
       const rot = '" transform="rotate(' + deg.toFixed(1) + " " + mx + " " + my + ')"/>';
       svg += '<rect class="slot road ' + st + '" x="' + (mx - 55) + '" y="' + (my - 11) + '" width="110" height="22" rx="5' + rot;
       // Invisible larger tap area for the road
-      svg += '<rect class="hit" data-slot="' + s.id + '" x="' + (mx - 65) + '" y="' + (my - 30) + '" width="130" height="60' + rot;
+      svg += '<rect class="hit" fill="transparent" data-slot="' + s.id + '" x="' + (mx - 65) + '" y="' + (my - 30) + '" width="130" height="60' + rot;
     }
   });
   ISLAND_ONE.buildSlots.forEach((s) => {
