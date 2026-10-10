@@ -230,7 +230,7 @@ function slotState(player, slot) {
 
 // Outline shapes from house-outline.svg, city-outline.svg and knight-outline.svg (100x100), number inside.
 const SHAPES = {
-  settlement: { d: "M18 90 V46 L50 16 L82 46 V90 Z", ty: 75, fs: 30 },
+  settlement: { d: "M18 90 V46 L50 16 L82 46 V90 Z", ty: 75, fs: 30, scale: 1.1 },
   city: { d: "M10 90 V38 H16 V32 H24 V38 H30 V32 H38 V38 H38 V50 H62 V38 H62 V32 H70 V38 H76 V32 H84 V38 H90 V90 Z", ty: 78, fs: 28 },
   knight: { d: "M28 92 V42 C28 26 38 16 50 16 C62 16 72 26 72 42 V92 Z", ty: 78, fs: 26,
     extra: '<path d="M50 16 C48 6 62 3 72 11 C64 10 58 12 54 17" class="line"/><rect x="35" y="34" width="30" height="8" rx="4" class="line"/>' }
@@ -266,8 +266,8 @@ function renderMap(player) {
       const [a, b] = s.vertices.map((v) => V[v]);
       const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
       const deg = Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI;
-      svg += '<rect class="slot road ' + st + '" data-slot="' + s.id + '" x="' + (mx - 40) + '" y="' + (my - 18) +
-        '" width="80" height="36" rx="6" transform="rotate(' + deg.toFixed(1) + " " + mx + " " + my + ')"/>';
+      svg += '<rect class="slot road ' + st + '" data-slot="' + s.id + '" x="' + (mx - 35) + '" y="' + (my - 17) +
+        '" width="70" height="34" rx="6" transform="rotate(' + deg.toFixed(1) + " " + mx + " " + my + ')"/>';
     }
   });
   ISLAND_ONE.buildSlots.forEach((s) => {
@@ -288,7 +288,7 @@ function renderMap(player) {
       y += out[1];
     }
     const sh = SHAPES[s.type];
-    svg += '<g class="slot ' + st + '" data-slot="' + s.id + '" transform="translate(' + (x - 62) + " " + (y - 62) + ') scale(1.24)">' +
+    svg += '<g class="slot ' + st + '" data-slot="' + s.id + '" transform="translate(' + (x - 50 * (sh.scale || 1.24)) + " " + (y - 50 * (sh.scale || 1.24)) + ') scale(' + (sh.scale || 1.24) + ')">' +
       '<path class="shape" d="' + sh.d + '"/>' + (sh.extra || "") +
       '<text x="50" y="' + sh.ty + '" font-size="' + sh.fs + '" text-anchor="middle">' + s.pointValue + "</text></g>";
   });
