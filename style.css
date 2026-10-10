@@ -15,3 +15,9 @@ h1 {
   letter-spacing: 0.2em;
   margin: 0 0 0.5rem;
 }
+
+#data-check {
+  text-align: left;
+  margin: 1rem auto;
+  max-width: 24rem;
+}
