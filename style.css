@@ -147,7 +147,7 @@ button.die.spent { opacity: 0.3; }
 
 #map { margin-bottom: 1rem; }
 #map svg { width: 100%; height: auto; display: block; border: 3px solid var(--gold); border-radius: 6px; }
-#map rect.road { stroke: #3b2a1a; stroke-width: 5; }
+#map rect.road { stroke: none; }
 #map rect.road.locked { fill: #b9bcbf; opacity: 0.8; }
 #map rect.road.buildable { fill: #f4d03f; }
 #map rect.road.built { fill: #2f5d3a; }
