@@ -1,10 +1,12 @@
-const CACHE = "cadan-v4";
+const CACHE = "cadan-v5";
 const SHELL = [
   "./", "index.html", "style.css", "script.js", "manifest.json",
   "data/constants.js", "data/island-one.js",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png",
   "icons/res-brick.png", "icons/res-lumber.png", "icons/res-wool.png", "icons/res-grain.png",
-  "icons/res-ore.png", "icons/res-gold.png", "icons/res-any.png"
+  "icons/res-ore.png", "icons/res-gold.png", "icons/res-any.png",
+  "icons/tile-brick.png", "icons/tile-lumber.png", "icons/tile-wool.png", "icons/tile-grain.png",
+  "icons/tile-ore.png", "icons/tile-any.png"
 ];
 
 self.addEventListener("install", (e) => {
