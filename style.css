@@ -110,3 +110,22 @@ button:disabled { opacity: 0.5; }
 }
 .chip b { margin-left: 0.4rem; }
 .chip.active { border-color: var(--gold); background: var(--gold); color: var(--ink); }
+
+#dice { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-bottom: 1rem; }
+button.die {
+  min-height: 72px;
+  margin: 0;
+  padding: 0;
+  font-size: 2rem;
+  color: var(--ink);
+  text-transform: none;
+  background: #fbf3dc;
+  border: 3px solid var(--stone);
+  border-radius: 10px;
+  box-shadow: 0 3px 0 var(--stone);
+  clip-path: none;
+}
+button.die.kept { border-color: var(--gold); background: var(--gold); }
+button.die.rolling { animation: shake 0.12s infinite; }
+button.die:disabled { opacity: 1; }
+@keyframes shake { 0% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } 100% { transform: rotate(-6deg); } }

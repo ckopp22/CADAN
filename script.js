@@ -44,7 +44,65 @@ document.querySelectorAll("[data-go]").forEach((b) =>
 })();
 
 // Game state and turn shell
-const state = { players: [], currentPlayerIndex: 0, turnNumber: 1, soundOn: true };
+const state = { players: [], currentPlayerIndex: 0, turnNumber: 1, soundOn: true,
+  dice: [], rollCount: 0, stopped: false, rolling: false };
+
+const DIE_ICONS = { BRICK: "\u{1F9F1}", LUMBER: "\u{1FAB5}", WOOL: "\u{1F411}", GRAIN: "\u{1F33E}", ORE: "\u{1FAA8}", GOLD: "\u{1FA99}" };
+
+function resetDice() {
+  state.dice = CONSTANTS.dieFaces.map(() => ({ value: null, kept: false }));
+  state.rollCount = 0;
+  state.stopped = false;
+  state.rolling = false;
+}
+
+function randomFace() {
+  return CONSTANTS.dieFaces[Math.floor(Math.random() * CONSTANTS.dieFaces.length)];
+}
+
+function rollDice() {
+  if (state.rolling || state.stopped || state.rollCount >= CONSTANTS.maxRollsPerTurn) return;
+  if (state.dice.every((d) => d.kept)) return;
+  state.rolling = true;
+  state.rollCount++;
+  let ticks = 0;
+  const timer = setInterval(() => {
+    state.dice.forEach((d) => { if (!d.kept) d.value = randomFace(); });
+    renderDice();
+    if (++ticks >= 8) {
+      clearInterval(timer);
+      state.rolling = false;
+      renderDice();
+    }
+  }, 60);
+}
+
+function renderDice() {
+  const canKeep = state.rollCount > 0 && !state.stopped && !state.rolling &&
+    state.rollCount < CONSTANTS.maxRollsPerTurn;
+  const box = document.getElementById("dice");
+  box.innerHTML = "";
+  state.dice.forEach((d, i) => {
+    const el = document.createElement("button");
+    el.className = "die" + (d.kept ? " kept" : "") + (state.rolling && !d.kept ? " rolling" : "");
+    el.textContent = d.value ? DIE_ICONS[d.value] : "?";
+    el.title = d.value || "";
+    el.disabled = !canKeep;
+    el.addEventListener("click", () => { d.kept = !d.kept; renderDice(); });
+    box.appendChild(el);
+  });
+  const over = state.stopped || state.rollCount >= CONSTANTS.maxRollsPerTurn;
+  document.getElementById("roll-count").textContent = over && state.rollCount > 0
+    ? "Rolling finished (" + state.rollCount + " of " + CONSTANTS.maxRollsPerTurn + ")"
+    : "Roll " + Math.min(state.rollCount + 1, CONSTANTS.maxRollsPerTurn) + " of " + CONSTANTS.maxRollsPerTurn;
+  const rollBtn = document.getElementById("roll");
+  rollBtn.textContent = state.rollCount === 0 ? "Roll" : "Roll Again";
+  rollBtn.disabled = over || state.rolling || state.dice.every((d) => d.kept);
+  document.getElementById("stop").disabled = state.rollCount === 0 || over || state.rolling;
+}
+
+document.getElementById("roll").addEventListener("click", rollDice);
+document.getElementById("stop").addEventListener("click", () => { state.stopped = true; renderDice(); });
 
 function renderPlay() {
   const done = state.turnNumber > CONSTANTS.turnsPerPlayer;
@@ -56,6 +114,7 @@ function renderPlay() {
   document.getElementById("turn-count").textContent =
     "Turn " + Math.min(state.turnNumber, CONSTANTS.turnsPerPlayer) + " of " + CONSTANTS.turnsPerPlayer;
   document.getElementById("end-turn").disabled = done;
+  renderDice();
 }
 
 document.getElementById("start").addEventListener("click", () => {
@@ -71,6 +130,7 @@ document.getElementById("start").addEventListener("click", () => {
   }));
   state.currentPlayerIndex = 0;
   state.turnNumber = 1;
+  resetDice();
   renderPlay();
   showScreen("play");
 });
@@ -82,5 +142,6 @@ document.getElementById("end-turn").addEventListener("click", () => {
     state.currentPlayerIndex = 0;
     state.turnNumber++;
   }
+  resetDice();
   renderPlay();
 });
