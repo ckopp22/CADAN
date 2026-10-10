@@ -230,7 +230,6 @@ function slotState(player, slot) {
 
 function renderMap(player) {
   const L = ISLAND_ONE.layout, V = L.vertices, r = L.hexRadius;
-  const mark = (state) => (state === "built" ? "\u2713" : "");
   let svg = '<svg viewBox="20 600 960 1000" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="1000" height="1700" fill="#8fc1d4"/>';
   ISLAND_ONE.hexes.forEach((h) => {
     const [cx, cy] = L.hexCenters[h.id];
@@ -255,17 +254,17 @@ function renderMap(player) {
     } else {
       [x, y] = V[s.vertex];
     }
-    if (s.type === "settlement") {
-      // House outline from house-outline.svg (100x100), scaled up, with the point value inside.
-      svg += '<g class="slot ' + st + '" data-slot="' + s.id + '" transform="translate(' + (x - 62) + " " + (y - 62) + ') scale(1.24)">' +
-        '<path class="house" d="M18 90 V46 L50 16 L82 46 V90 Z" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>' +
-        '<text x="50" y="75" font-size="30" text-anchor="middle">' + s.pointValue + "</text></g>";
-      return;
-    }
-    const w = s.type === "city" ? 120 : 100;
-    svg += '<g class="slot ' + st + '" data-slot="' + s.id + '"><rect x="' + (x - w / 2) + '" y="' + (y - 50) + '" width="' + w +
-      '" height="100" rx="' + (s.type === "knight" ? 50 : 14) + '"/><use href="#ico-' + s.type + '" x="' + (x - 24) + '" y="' + (y - 48) + '" width="48" height="48"/><text x="' + x + '" y="' + (y + 38) +
-      '" font-size="46" text-anchor="middle">' + (mark(st) || s.pointValue) + "</text></g>";
+    // Outline shapes from house-outline.svg, city-outline.svg and knight-outline.svg (100x100), number inside.
+    const SHAPES = {
+      settlement: { d: "M18 90 V46 L50 16 L82 46 V90 Z", ty: 75, fs: 30 },
+      city: { d: "M10 90 V38 H16 V32 H24 V38 H30 V32 H38 V38 H38 V50 H62 V38 H62 V32 H70 V38 H76 V32 H84 V38 H90 V90 Z", ty: 78, fs: 28 },
+      knight: { d: "M28 92 V42 C28 26 38 16 50 16 C62 16 72 26 72 42 V92 Z", ty: 78, fs: 26,
+        extra: '<path d="M50 16 C48 6 62 3 72 11 C64 10 58 12 54 17" class="line"/><rect x="35" y="34" width="30" height="8" rx="4" class="line"/>' }
+    };
+    const sh = SHAPES[s.type];
+    svg += '<g class="slot ' + st + '" data-slot="' + s.id + '" transform="translate(' + (x - 62) + " " + (y - 62) + ') scale(1.24)">' +
+      '<path class="shape" d="' + sh.d + '"/>' + (sh.extra || "") +
+      '<text x="50" y="' + sh.ty + '" font-size="' + sh.fs + '" text-anchor="middle">' + s.pointValue + "</text></g>";
   });
   document.getElementById("map").innerHTML = svg + "</svg>";
 }

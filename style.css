@@ -153,9 +153,9 @@ button.die.spent { opacity: 0.3; }
 #map line.buildable { stroke: #f4d03f; }
 #map line.built { stroke: #2f5d3a; }
 #map g.slot text { fill: var(--ink); font-family: "Lora", Georgia, serif; font-weight: 700; }
-#map g.locked rect, #map g.locked path.house { fill: #b9bcbf; stroke: #6b6b66; stroke-width: 6; opacity: 0.85; }
-#map g.buildable rect, #map g.buildable path.house { fill: #f4d03f; stroke: var(--red); stroke-width: 10; }
-#map g.built rect, #map g.built path.house { fill: #2f5d3a; stroke: var(--gold); stroke-width: 6; }
+#map g.locked path.shape { fill: #b9bcbf; stroke: #6b6b66; stroke-width: 6; opacity: 0.85; }
+#map g.buildable path.shape { fill: #f4d03f; stroke: var(--red); stroke-width: 10; }
+#map g.built path.shape { fill: #2f5d3a; stroke: var(--gold); stroke-width: 6; }
 #map g.built text { fill: #f1e3c0; }
 
 #map .slot { cursor: pointer; }
@@ -183,4 +183,5 @@ img.ico { object-fit: contain; }
 button.die { background: #fbf3dc; }
 #map svg { background: #8fc1d4; }
 
-#map g.slot path.house { stroke-width: 4; }
+#map g.slot path.shape { stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
+#map g.slot .line { fill: none; stroke: #3b2a1a; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
