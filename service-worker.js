@@ -1,4 +1,4 @@
-const CACHE = "cadan-v12";
+const CACHE = "cadan-v13";
 const SHELL = [
   "./", "index.html", "style.css", "script.js", "manifest.json",
   "data/constants.js", "data/island-one.js",

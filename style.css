@@ -186,14 +186,10 @@ button.die { background: #fbf3dc; }
 
 .turn-head { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.4rem; }
 .turn-head h2 { flex: 1; margin: 0; }
-#key-panel { margin: 0.5rem 0 0.8rem; padding: 0.5rem 0.7rem; text-align: left; background: #fbf3dc; border: 2px solid var(--gold); border-radius: 8px; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25); }
-#key-panel[hidden] { display: none; }
-.key-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0; }
-.key-row + .key-row { border-top: 1px solid var(--parchment-dark); }
-.key-row .struct { width: 1.9rem; height: 1.9rem; flex: none; }
-.key-row > span:nth-child(2) { width: 6.2rem; font-weight: 700; }
-.key-cost { display: flex; flex-wrap: wrap; gap: 0.15rem; }
-.key-cost .ico { width: 1.5rem; height: 1.5rem; }
+.key-row { display: flex; align-items: center; gap: 4px; padding: 1px 0; }
+.key-row .struct { width: 18px; height: 18px; flex: none; }
+.key-cost { display: flex; gap: 1px; }
+.key-cost .ico { width: 15px; height: 15px; }
 
 #map-wrap { position: relative; margin-bottom: 1rem; }
 #map-wrap #map { margin-bottom: 0; }
@@ -211,19 +207,14 @@ button.die { background: #fbf3dc; }
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-button#key-btn {
+
+#map-key {
   position: absolute;
   top: 0.4rem;
   left: 0.4rem;
-  width: 32px;
-  min-height: 32px;
-  height: 32px;
-  margin: 0;
-  padding: 0;
-  clip-path: none;
-  border-radius: 50%;
-  border-width: 1.5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 3px 5px;
+  background: rgba(251, 243, 220, 0.9);
+  border: 1.5px solid var(--gold);
+  border-radius: 6px;
+  pointer-events: none;
 }

@@ -244,24 +244,17 @@ function structIcon(type) {
 }
 
 function buildKey() {
-  const names = { road: "Road", settlement: "Settlement", city: "City", knight: "Knight" };
-  document.getElementById("key-panel").innerHTML = Object.keys(names).map((type) => {
+  document.getElementById("map-key").innerHTML = ["road", "settlement", "city", "knight"].map((type) => {
     const cost = CONSTANTS.buildCosts[type];
     const icons = Object.keys(cost).map((r) => DIE_ICONS[r.toUpperCase()].repeat(cost[r])).join("");
-    return '<div class="key-row">' + structIcon(type) + "<span>" + names[type] + "</span><span class=\"key-cost\">" + icons + "</span></div>";
+    return '<div class="key-row">' + structIcon(type) + '<span class="key-cost">' + icons + "</span></div>";
   }).join("");
 }
 buildKey();
-const keyBtn = document.getElementById("key-btn");
-keyBtn.addEventListener("click", () => {
-  const panel = document.getElementById("key-panel");
-  panel.hidden = !panel.hidden;
-  keyBtn.setAttribute("aria-expanded", String(!panel.hidden));
-});
 
 function renderMap(player) {
   const L = ISLAND_ONE.layout, V = L.vertices, r = L.hexRadius;
-  let svg = '<svg viewBox="20 520 960 1080" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="1000" height="1700" fill="#8fc1d4"/>';
+  let svg = '<svg viewBox="20 470 960 1130" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="1000" height="1700" fill="#8fc1d4"/>';
   ISLAND_ONE.hexes.forEach((h) => {
     const [cx, cy] = L.hexCenters[h.id];
     svg += '<image href="icons/tile-' + h.resource.toLowerCase() + '.png" x="' + (cx - r) + '" y="' + (cy - r * 0.866).toFixed(0) +
