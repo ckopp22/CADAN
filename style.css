@@ -214,11 +214,5 @@ button.die { background: #fbf3dc; }
   left: 0.4rem;
   top: 1.1cqw;
   left: 1.1cqw;
-  padding: 3px 5px;
-  padding: 0.8cqw 1.4cqw;
-  background: rgba(251, 243, 220, 0.9);
-  border: 1.5px solid var(--gold);
-  border-radius: 6px;
-  border-radius: 1.6cqw;
   pointer-events: none;
 }
