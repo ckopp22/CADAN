@@ -147,10 +147,10 @@ button.die.spent { opacity: 0.3; }
 
 #map { margin-bottom: 1rem; }
 #map svg { width: 100%; height: auto; display: block; border: 3px solid var(--gold); border-radius: 6px; }
-#map line.slot { stroke-width: 36; }
-#map line.locked { stroke: #8a8f94; opacity: 0.6; }
-#map line.buildable { stroke: #f4d03f; }
-#map line.built { stroke: #2f5d3a; }
+#map rect.road { stroke: #3b2a1a; stroke-width: 5; }
+#map rect.road.locked { fill: #b9bcbf; opacity: 0.8; }
+#map rect.road.buildable { fill: #f4d03f; }
+#map rect.road.built { fill: #2f5d3a; }
 #map g.slot text { fill: var(--ink); font-family: "Lora", Georgia, serif; font-weight: 700; }
 #map g.locked path.shape { fill: #b9bcbf; stroke: #6b6b66; stroke-width: 6; opacity: 0.85; }
 #map g.buildable path.shape { fill: #f4d03f; stroke: var(--red); stroke-width: 10; }

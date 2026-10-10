@@ -264,7 +264,10 @@ function renderMap(player) {
     const st = slotState(player, s);
     if (s.type === "road") {
       const [a, b] = s.vertices.map((v) => V[v]);
-      svg += '<line class="slot ' + st + '" data-slot="' + s.id + '" x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '" stroke-linecap="round"/>';
+      const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+      const deg = Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI;
+      svg += '<rect class="slot road ' + st + '" data-slot="' + s.id + '" x="' + (mx - 40) + '" y="' + (my - 18) +
+        '" width="80" height="36" rx="6" transform="rotate(' + deg.toFixed(1) + " " + mx + " " + my + ')"/>';
     }
   });
   ISLAND_ONE.buildSlots.forEach((s) => {
