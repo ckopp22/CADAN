@@ -8,9 +8,55 @@
 </head>
 <body>
   <main>
-    <h1>CADAN</h1>
-    <p>Coming soon</p>
-    <section id="data-check"></section>
+    <section id="menu" class="screen active">
+      <h1>CADAN</h1>
+      <button data-go="setup">Play</button>
+      <button data-go="how">How to Play</button>
+      <button data-go="leaderboards">Leaderboards</button>
+      <button data-go="data-check">Data Check</button>
+    </section>
+
+    <section id="how" class="screen">
+      <h2>How to Play</h2>
+      <div class="text">
+        <p><b>Rolling:</b> Each turn, roll 6 dice. Keep any you like and re-roll the rest, up to 3 rolls in total.</p>
+        <p><b>Building:</b> Spend your dice on roads, settlements, cities and knights on your own island. Each type must be built in ascending point order.</p>
+        <p><b>Knight jokers:</b> Each knight you build lets you use its resource as a wildcard once per game.</p>
+        <p><b>Gold:</b> Trade 2 gold for any 1 resource.</p>
+        <p><b>Winning:</b> Build nothing on a turn and you mark an X (-2 points). After 15 turns each, the highest score wins.</p>
+      </div>
+      <button data-go="menu">Back</button>
+    </section>
+
+    <section id="leaderboards" class="screen">
+      <h2>Leaderboards</h2>
+      <p>No games saved yet.</p>
+      <button data-go="menu">Back</button>
+    </section>
+
+    <section id="setup" class="screen">
+      <h2>Player Setup</h2>
+      <div class="stepper">
+        <button id="fewer" aria-label="Fewer players">-</button>
+        <span>Players: <b id="count">1</b></span>
+        <button id="more" aria-label="More players">+</button>
+      </div>
+      <div id="names"></div>
+      <button data-go="play">Start Game</button>
+      <button data-go="menu">Back</button>
+    </section>
+
+    <section id="play" class="screen">
+      <h2>Game coming soon</h2>
+      <p>The game board arrives in a later section.</p>
+      <button data-go="menu">Back to Menu</button>
+    </section>
+
+    <section id="data-check" class="screen">
+      <h2>Data Check</h2>
+      <div id="data-list"></div>
+      <button data-go="menu">Back</button>
+    </section>
   </main>
   <script src="data/constants.js"></script>
   <script src="data/island-one.js"></script>

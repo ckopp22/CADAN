@@ -16,8 +16,35 @@ h1 {
   margin: 0 0 0.5rem;
 }
 
-#data-check {
-  text-align: left;
-  margin: 1rem auto;
-  max-width: 24rem;
+.screen { display: none; }
+.screen.active { display: block; }
+
+main { padding: 1rem; max-width: 24rem; width: 100%; }
+
+button {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  margin: 0.5rem 0;
+  font: inherit;
+  background: #8b2e2e;
+  color: #f1e3c0;
+  border: 0;
+  border-radius: 6px;
 }
+
+.stepper { display: flex; align-items: center; gap: 1rem; }
+.stepper button { width: 48px; margin: 0; }
+.stepper span { flex: 1; }
+
+input {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  margin: 0.5rem 0;
+  padding: 0 0.5rem;
+  font: inherit;
+}
+
+.text, #data-list { text-align: left; }
