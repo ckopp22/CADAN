@@ -254,7 +254,7 @@ buildKey();
 
 function renderMap(player) {
   const L = ISLAND_ONE.layout, V = L.vertices, r = L.hexRadius;
-  let svg = '<svg viewBox="-15 440 1120 1224" xmlns="http://www.w3.org/2000/svg"><rect x="-100" y="0" width="1300" height="1800" fill="#8fc1d4"/>';
+  let svg = '<svg viewBox="5 440 1060 1224" xmlns="http://www.w3.org/2000/svg"><rect x="-100" y="0" width="1300" height="1800" fill="#8fc1d4"/>';
   ISLAND_ONE.hexes.forEach((h) => {
     const [cx, cy] = L.hexCenters[h.id];
     svg += '<image href="icons/tile-' + h.resource.toLowerCase() + '.png" x="' + (cx - r) + '" y="' + (cy - r * 0.866).toFixed(0) +
