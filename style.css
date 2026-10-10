@@ -97,3 +97,16 @@ input:focus { outline: none; border-color: var(--green); }
 
 .text, #data-list { text-align: left; }
 .text p { margin: 0 0 0.8rem; }
+
+button:disabled { opacity: 0.5; }
+
+#scoreboard { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin-bottom: 1.2rem; }
+.chip {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.85rem;
+  border: 2px solid var(--stone);
+  border-radius: 4px;
+  background: #fbf3dc;
+}
+.chip b { margin-left: 0.4rem; }
+.chip.active { border-color: var(--gold); background: var(--gold); color: var(--ink); }

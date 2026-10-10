@@ -45,14 +45,16 @@
         <button id="more" aria-label="More players">+</button>
       </div>
       <div id="names"></div>
-      <button data-go="play">Start Game</button>
+      <button id="start">Start Game</button>
       <button data-go="menu">Back</button>
     </section>
 
     <section id="play" class="screen">
-      <h2>Game coming soon</h2>
-      <p>The game board arrives in a later section.</p>
-      <button data-go="menu">Back to Menu</button>
+      <div id="scoreboard"></div>
+      <h2 id="turn-player"></h2>
+      <p id="turn-count"></p>
+      <button id="end-turn">End Turn</button>
+      <button data-go="menu">Quit to Menu</button>
     </section>
 
     <section id="data-check" class="screen">

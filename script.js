@@ -42,3 +42,45 @@ document.querySelectorAll("[data-go]").forEach((b) =>
   document.getElementById("more").addEventListener("click", () => { n = Math.min(6, n + 1); render(); });
   render();
 })();
+
+// Game state and turn shell
+const state = { players: [], currentPlayerIndex: 0, turnNumber: 1, soundOn: true };
+
+function renderPlay() {
+  const done = state.turnNumber > CONSTANTS.turnsPerPlayer;
+  const current = state.players[state.currentPlayerIndex];
+  document.getElementById("scoreboard").innerHTML = state.players.map((p, i) =>
+    '<div class="chip' + (i === state.currentPlayerIndex && !done ? " active" : "") + '">' +
+    p.name + "<b>" + p.score + "</b></div>").join("");
+  document.getElementById("turn-player").textContent = done ? "Game complete" : current.name + "'s Turn";
+  document.getElementById("turn-count").textContent =
+    "Turn " + Math.min(state.turnNumber, CONSTANTS.turnsPerPlayer) + " of " + CONSTANTS.turnsPerPlayer;
+  document.getElementById("end-turn").disabled = done;
+}
+
+document.getElementById("start").addEventListener("click", () => {
+  const inputs = document.querySelectorAll("#names input");
+  state.players = Array.from(inputs).map((input, i) => ({
+    id: "p" + (i + 1),
+    name: input.value.trim() || "Player " + (i + 1),
+    score: 0,
+    xCount: 0,
+    builtSlotIds: ["road-1"],
+    jokersUsed: [],
+    turnsTaken: 0
+  }));
+  state.currentPlayerIndex = 0;
+  state.turnNumber = 1;
+  renderPlay();
+  showScreen("play");
+});
+
+document.getElementById("end-turn").addEventListener("click", () => {
+  state.players[state.currentPlayerIndex].turnsTaken++;
+  state.currentPlayerIndex++;
+  if (state.currentPlayerIndex >= state.players.length) {
+    state.currentPlayerIndex = 0;
+    state.turnNumber++;
+  }
+  renderPlay();
+});
