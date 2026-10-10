@@ -170,6 +170,8 @@ button.die.spent { opacity: 0.3; }
 button.die .ico { width: 2.4rem; height: 2.4rem; vertical-align: middle; }
 .tally-item .ico { width: 1.7rem; height: 1.7rem; }
 
+main:has(#play.active) { padding: 0.5rem; max-width: 28rem; }
+
 @media (orientation: landscape) and (min-width: 700px) {
   main:has(#play.active) { max-width: 60rem; }
   #play.active { display: grid; grid-template-columns: 1.3fr 1fr; column-gap: 1.5rem; align-items: start; }
