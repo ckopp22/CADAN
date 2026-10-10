@@ -266,8 +266,8 @@ function renderMap(player) {
       const [a, b] = s.vertices.map((v) => V[v]);
       const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
       const deg = Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI;
-      svg += '<rect class="slot road ' + st + '" data-slot="' + s.id + '" x="' + (mx - 35) + '" y="' + (my - 17) +
-        '" width="70" height="34" rx="6" transform="rotate(' + deg.toFixed(1) + " " + mx + " " + my + ')"/>';
+      svg += '<rect class="slot road ' + st + '" data-slot="' + s.id + '" x="' + (mx - 45) + '" y="' + (my - 11) +
+        '" width="90" height="22" rx="5" transform="rotate(' + deg.toFixed(1) + " " + mx + " " + my + ')"/>';
     }
   });
   ISLAND_ONE.buildSlots.forEach((s) => {
