@@ -255,6 +255,13 @@ function renderMap(player) {
     } else {
       [x, y] = V[s.vertex];
     }
+    if (s.type === "settlement") {
+      // House outline from house-outline.svg (100x100), scaled up, with the point value inside.
+      svg += '<g class="slot ' + st + '" data-slot="' + s.id + '" transform="translate(' + (x - 62) + " " + (y - 62) + ') scale(1.24)">' +
+        '<path class="house" d="M18 90 V46 L50 16 L82 46 V90 Z" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>' +
+        '<text x="50" y="75" font-size="30" text-anchor="middle">' + s.pointValue + "</text></g>";
+      return;
+    }
     const w = s.type === "city" ? 120 : 100;
     svg += '<g class="slot ' + st + '" data-slot="' + s.id + '"><rect x="' + (x - w / 2) + '" y="' + (y - 50) + '" width="' + w +
       '" height="100" rx="' + (s.type === "knight" ? 50 : 14) + '"/><use href="#ico-' + s.type + '" x="' + (x - 24) + '" y="' + (y - 48) + '" width="48" height="48"/><text x="' + x + '" y="' + (y + 38) +
