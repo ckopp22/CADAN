@@ -166,3 +166,15 @@ button.die.spent { opacity: 0.3; }
 
 #winner { font-size: 1.3rem; font-weight: 700; color: var(--green); }
 #standings .chip { display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 1rem; }
+
+.ico { width: 1.1em; height: 1.1em; vertical-align: -0.2em; }
+button.die .ico { width: 2.4rem; height: 2.4rem; vertical-align: middle; }
+.tally-item .ico { width: 1.7rem; height: 1.7rem; }
+
+@media (orientation: landscape) and (min-width: 700px) {
+  main:has(#play.active) { max-width: 60rem; }
+  #play.active { display: grid; grid-template-columns: 1.3fr 1fr; column-gap: 1.5rem; align-items: start; }
+  #play > * { grid-column: 2; }
+  #play > #scoreboard { grid-column: 1 / -1; }
+  #play > #map { grid-column: 1; grid-row: 2 / span 14; }
+}

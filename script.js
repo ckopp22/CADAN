@@ -67,7 +67,10 @@ document.querySelectorAll("[data-go]").forEach((b) =>
 const state = { players: [], currentPlayerIndex: 0, turnNumber: 1, soundOn: true,
   dice: [], rollCount: 0, stopped: false, rolling: false, spent: {}, jokerPending: null, builtThisTurn: 0 };
 
-const DIE_ICONS = { BRICK: "\u{1F9F1}", LUMBER: "\u{1FAB5}", WOOL: "\u{1F411}", GRAIN: "\u{1F33E}", ORE: "\u{1FAA8}", GOLD: "\u{1FA99}" };
+const DIE_ICONS = {};
+CONSTANTS.dieFaces.forEach((f) => {
+  DIE_ICONS[f] = '<svg class="ico" viewBox="0 0 32 32"><use href="#ico-' + f.toLowerCase() + '"/></svg>';
+});
 
 function resetDice() {
   state.dice = CONSTANTS.dieFaces.map(() => ({ value: null, kept: false, spent: false }));
@@ -119,7 +122,7 @@ function renderTally(rollingOver) {
   CONSTANTS.dieFaces.filter((f) => f !== "GOLD").forEach((f) => {
     const b = document.createElement("button");
     b.className = "trade-btn";
-    b.textContent = "2" + DIE_ICONS.GOLD + " \u2192 " + DIE_ICONS[f];
+    b.innerHTML = "2" + DIE_ICONS.GOLD + " \u2192 " + DIE_ICONS[f];
     b.disabled = !rollingOver || counts.GOLD < CONSTANTS.goldTradeRate;
     b.addEventListener("click", () => tradeGold(f));
     trade.appendChild(b);
@@ -136,7 +139,7 @@ function renderJokers(over) {
     const used = player.jokersUsed.includes(k.id);
     const b = document.createElement("button");
     b.className = "trade-btn";
-    b.textContent = "Joker " + (k.jokerResource === "ANY" ? "?" : DIE_ICONS[k.jokerResource]) + (used ? " (used)" : "");
+    b.innerHTML = "Joker " + (k.jokerResource === "ANY" ? "?" : DIE_ICONS[k.jokerResource]) + (used ? " (used)" : "");
     b.disabled = used || !over;
     b.addEventListener("click", () => {
       if (pending && pending.knightId === k.id) state.jokerPending = null;
@@ -150,7 +153,7 @@ function renderJokers(over) {
     CONSTANTS.dieFaces.filter((f) => f !== "GOLD").forEach((f) => {
       const b = document.createElement("button");
       b.className = "trade-btn";
-      b.textContent = DIE_ICONS[f];
+      b.innerHTML = DIE_ICONS[f];
       b.addEventListener("click", () => { pending.face = f; setMessage("Tap a die to turn it."); renderDice(); });
       box.appendChild(b);
     });
@@ -183,7 +186,7 @@ function renderDice() {
   state.dice.forEach((d, i) => {
     const el = document.createElement("button");
     el.className = "die" + (d.spent ? " spent" : "") + (d.kept ? " kept" : "") + (state.rolling && !d.kept ? " rolling" : "");
-    el.textContent = d.value ? DIE_ICONS[d.value] : "?";
+    el.innerHTML = d.value ? DIE_ICONS[d.value] : "?";
     el.title = d.value || "";
     const jokerMode = !!(state.jokerPending && state.jokerPending.face);
     el.disabled = d.spent || !(canKeep || jokerMode);
@@ -210,7 +213,6 @@ document.getElementById("roll").addEventListener("click", rollDice);
 document.getElementById("stop").addEventListener("click", () => { state.stopped = true; renderDice(); });
 
 const HEX_COLORS = { ORE: "#8a8a94", ANY: "#d8c28a", BRICK: "#b0583a", LUMBER: "#3f6b3a", WOOL: "#8fc36a", GRAIN: "#e0b84a" };
-const SLOT_ICONS = { road: "", settlement: "\u{1F3E0}", city: "\u{1F3F0}", knight: "\u{1F6E1}\uFE0F" };
 
 // A slot is built, buildable (next in order and next to a built road where required), or locked.
 function slotState(player, slot) {
@@ -236,8 +238,9 @@ function renderMap(player) {
     const pts = [0, 60, 120, 180, 240, 300].map((a) =>
       (cx + r * Math.cos(a * Math.PI / 180)).toFixed(0) + "," + (cy + r * Math.sin(a * Math.PI / 180)).toFixed(0)).join(" ");
     svg += '<polygon points="' + pts + '" fill="' + HEX_COLORS[h.resource] + '" stroke="#e8d9a8" stroke-width="10"/>';
-    svg += '<text x="' + cx + '" y="' + (cy + 55) + '" font-size="90" text-anchor="middle">' +
-      (h.resource === "ANY" ? "?" : DIE_ICONS[h.resource]) + "</text>";
+    svg += h.resource === "ANY"
+      ? '<text x="' + cx + '" y="' + (cy + 55) + '" font-size="90" text-anchor="middle" fill="#3b2a1a">?</text>'
+      : '<use href="#ico-' + h.resource.toLowerCase() + '" x="' + (cx - 50) + '" y="' + (cy - 5) + '" width="100" height="100"/>';
   });
   ISLAND_ONE.buildSlots.forEach((s) => {
     const st = slotState(player, s);
@@ -259,8 +262,8 @@ function renderMap(player) {
     }
     const w = s.type === "city" ? 120 : 100;
     svg += '<g class="slot ' + st + '" data-slot="' + s.id + '"><rect x="' + (x - w / 2) + '" y="' + (y - 50) + '" width="' + w +
-      '" height="100" rx="' + (s.type === "knight" ? 50 : 14) + '"/><text x="' + x + '" y="' + (y + 22) +
-      '" font-size="62" text-anchor="middle">' + (mark(st) || s.pointValue) + "</text></g>";
+      '" height="100" rx="' + (s.type === "knight" ? 50 : 14) + '"/><use href="#ico-' + s.type + '" x="' + (x - 24) + '" y="' + (y - 48) + '" width="48" height="48"/><text x="' + x + '" y="' + (y + 38) +
+      '" font-size="46" text-anchor="middle">' + (mark(st) || s.pointValue) + "</text></g>";
   });
   document.getElementById("map").innerHTML = svg + "</svg>";
 }
