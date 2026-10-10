@@ -228,6 +228,37 @@ function slotState(player, slot) {
   return builtRoads.some((r) => r.vertices.includes(slot.vertex)) ? "buildable" : "locked";
 }
 
+// Outline shapes from house-outline.svg, city-outline.svg and knight-outline.svg (100x100), number inside.
+const SHAPES = {
+  settlement: { d: "M18 90 V46 L50 16 L82 46 V90 Z", ty: 75, fs: 30 },
+  city: { d: "M10 90 V38 H16 V32 H24 V38 H30 V32 H38 V38 H38 V50 H62 V38 H62 V32 H70 V38 H76 V32 H84 V38 H90 V90 Z", ty: 78, fs: 28 },
+  knight: { d: "M28 92 V42 C28 26 38 16 50 16 C62 16 72 26 72 42 V92 Z", ty: 78, fs: 26,
+    extra: '<path d="M50 16 C48 6 62 3 72 11 C64 10 58 12 54 17" class="line"/><rect x="35" y="34" width="30" height="8" rx="4" class="line"/>' }
+};
+
+function structIcon(type) {
+  const body = type === "road"
+    ? '<path d="M14 72 L86 28" stroke-width="14"/>'
+    : '<path d="' + SHAPES[type].d + '"/>' + (SHAPES[type].extra || "").replace(/class="line"/g, "");
+  return '<svg class="struct" viewBox="0 0 100 100" fill="none" stroke="#3b2a1a" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">' + body + "</svg>";
+}
+
+function buildKey() {
+  const names = { road: "Road", settlement: "Settlement", city: "City", knight: "Knight" };
+  document.getElementById("key-panel").innerHTML = Object.keys(names).map((type) => {
+    const cost = CONSTANTS.buildCosts[type];
+    const icons = Object.keys(cost).map((r) => DIE_ICONS[r.toUpperCase()].repeat(cost[r])).join("");
+    return '<div class="key-row">' + structIcon(type) + "<span>" + names[type] + "</span><span class=\"key-cost\">" + icons + "</span></div>";
+  }).join("");
+}
+buildKey();
+const keyBtn = document.getElementById("key-btn");
+keyBtn.addEventListener("click", () => {
+  const panel = document.getElementById("key-panel");
+  panel.hidden = !panel.hidden;
+  keyBtn.setAttribute("aria-expanded", String(!panel.hidden));
+});
+
 function renderMap(player) {
   const L = ISLAND_ONE.layout, V = L.vertices, r = L.hexRadius;
   let svg = '<svg viewBox="20 600 960 1000" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="1000" height="1700" fill="#8fc1d4"/>';
@@ -257,13 +288,6 @@ function renderMap(player) {
     } else {
       [x, y] = V[s.vertex];
     }
-    // Outline shapes from house-outline.svg, city-outline.svg and knight-outline.svg (100x100), number inside.
-    const SHAPES = {
-      settlement: { d: "M18 90 V46 L50 16 L82 46 V90 Z", ty: 75, fs: 30 },
-      city: { d: "M10 90 V38 H16 V32 H24 V38 H30 V32 H38 V38 H38 V50 H62 V38 H62 V32 H70 V38 H76 V32 H84 V38 H90 V90 Z", ty: 78, fs: 28 },
-      knight: { d: "M28 92 V42 C28 26 38 16 50 16 C62 16 72 26 72 42 V92 Z", ty: 78, fs: 26,
-        extra: '<path d="M50 16 C48 6 62 3 72 11 C64 10 58 12 54 17" class="line"/><rect x="35" y="34" width="30" height="8" rx="4" class="line"/>' }
-    };
     const sh = SHAPES[s.type];
     svg += '<g class="slot ' + st + '" data-slot="' + s.id + '" transform="translate(' + (x - 62) + " " + (y - 62) + ') scale(1.24)">' +
       '<path class="shape" d="' + sh.d + '"/>' + (sh.extra || "") +

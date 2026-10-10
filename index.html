@@ -56,7 +56,13 @@
 
     <section id="play" class="screen">
       <div id="scoreboard"></div>
-      <h2 id="turn-player"></h2>
+      <div class="turn-head">
+        <h2 id="turn-player"></h2>
+        <button id="key-btn" aria-label="Show build costs" aria-expanded="false">
+          <svg viewBox="0 0 32 32" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="16" r="5.5"/><path d="M14.5 16H29M24 16v6M28.5 16v4.5"/></svg>
+        </button>
+      </div>
+      <div id="key-panel" hidden></div>
       <p id="turn-count"></p>
       <div id="map"></div>
       <p id="message"></p>
