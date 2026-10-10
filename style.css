@@ -110,21 +110,26 @@ button:disabled { opacity: 0.5; }
 .chip b { margin-left: 0.4rem; }
 .chip.active { border-color: var(--gold); background: var(--gold); color: var(--ink); }
 
-#dice { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-bottom: 1rem; }
+#dice { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.4rem; margin: 0.6rem 0 1rem; }
 button.die {
-  min-height: 72px;
+  aspect-ratio: 1;
+  min-height: 0;
+  width: 100%;
   margin: 0;
   padding: 0;
-  font-size: 2rem;
+  font-size: 1.6rem;
   color: var(--ink);
   text-transform: none;
-  background: #fbf3dc;
-  border: 3px solid var(--stone);
-  border-radius: 10px;
-  box-shadow: 0 3px 0 var(--stone);
+  background: linear-gradient(145deg, #fffaf0, #eadfbf);
+  border: 2px solid var(--stone);
+  border-radius: 14%;
+  box-shadow: 0 4px 0 var(--stone), inset 0 0 6px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   clip-path: none;
 }
-button.die.kept { border-color: var(--gold); background: var(--gold); }
+button.die.kept { border-color: var(--gold); background: var(--gold); transform: translateY(-4px); }
 button.die.rolling { animation: shake 0.12s infinite; }
 button.die:disabled { opacity: 1; }
 @keyframes shake { 0% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } 100% { transform: rotate(-6deg); } }
@@ -167,7 +172,7 @@ button.die.spent { opacity: 0.3; }
 #standings .chip { display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 1rem; }
 
 .ico { width: 1.1em; height: 1.1em; vertical-align: -0.2em; }
-button.die .ico { width: 2.4rem; height: 2.4rem; vertical-align: middle; }
+button.die .ico { width: 70%; height: 70%; vertical-align: middle; }
 .tally-item .ico { width: 1.7rem; height: 1.7rem; }
 
 main:has(#play.active) { padding: 0.5rem; max-width: 28rem; }
@@ -180,7 +185,6 @@ main:has(#play.active) { padding: 0.5rem; max-width: 28rem; }
 }
 
 img.ico { object-fit: contain; }
-button.die { background: #fbf3dc; }
 #map svg { background: #8fc1d4; }
 
 #map g.slot path.shape { stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }

@@ -198,13 +198,11 @@ function renderDice() {
     box.appendChild(el);
   });
   const over = state.stopped || state.rollCount >= CONSTANTS.maxRollsPerTurn;
-  document.getElementById("roll-count").textContent = over && state.rollCount > 0
-    ? "Rolling finished (" + state.rollCount + " of " + CONSTANTS.maxRollsPerTurn + ")"
-    : "Roll " + Math.min(state.rollCount + 1, CONSTANTS.maxRollsPerTurn) + " of " + CONSTANTS.maxRollsPerTurn;
   renderTally(over);
   renderJokers(over);
   const rollBtn = document.getElementById("roll");
-  rollBtn.textContent = state.rollCount === 0 ? "Roll" : "Roll Again";
+  rollBtn.textContent = (state.rollCount === 0 ? "Roll" : "Roll Again") + " (" + Math.min(state.rollCount + 1, CONSTANTS.maxRollsPerTurn) + "/" + CONSTANTS.maxRollsPerTurn + ")";
+  if (over && state.rollCount > 0) rollBtn.textContent = "Rolling finished (" + state.rollCount + "/" + CONSTANTS.maxRollsPerTurn + ")";
   rollBtn.disabled = over || state.rolling || state.dice.every((d) => d.kept);
   document.getElementById("stop").disabled = state.rollCount === 0 || over || state.rolling;
 }
