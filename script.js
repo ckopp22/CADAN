@@ -251,6 +251,9 @@ function renderMap(player) {
       const hex = ISLAND_ONE.hexes.find((h) => h.knight === s.order);
       [x, y] = L.hexCenters[hex.id];
       y -= 85;
+      const shift = (L.knightShift && L.knightShift[hex.id]) || [0, 0];
+      x += shift[0];
+      y += shift[1];
     } else {
       [x, y] = V[s.vertex];
     }

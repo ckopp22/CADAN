@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="200" height="200">
+  <!-- City (castle) outline: two towers with battlements and a taller center -->
+  <path d="M10 90 V38 H16 V32 H24 V38 H30 V32 H38 V38 H38 V50 H62 V38 H62 V32 H70 V38 H76 V32 H84 V38 H90 V90 Z"
+        fill="none" stroke="#3b2a1a" stroke-width="4"
+        stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Number goes here: change the text, or set it from JavaScript -->
+  <text id="city-number" x="50" y="78" text-anchor="middle"
+        font-family="Georgia, serif" font-size="28" font-weight="bold"
+        fill="#3b2a1a">7</text>
+</svg>

@@ -54,6 +54,7 @@ const ISLAND_ONE = {
   // Drawing coordinates (SVG units, flat-top hexes of radius 175). Not game rules.
   layout: {
     hexRadius: 175,
+    knightShift: { "hex-lumber": [65, 0] }, // nudges a knight marker so it does not cover the hex art
     hexCenters: {
       "hex-ore": [230, 930], "hex-desert": [500, 780], "hex-brick": [770, 930],
       "hex-lumber": [770, 1250], "hex-wool": [500, 1400], "hex-grain": [230, 1250]

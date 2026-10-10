@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="200" height="200">
+  <!-- House outline -->
+  <path d="M18 90 V46 L50 16 L82 46 V90 Z"
+        fill="none" stroke="#3b2a1a" stroke-width="4"
+        stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Number goes here: change the text, or set it from JavaScript -->
+  <text id="house-number" x="50" y="72" text-anchor="middle"
+        font-family="Georgia, serif" font-size="28" font-weight="bold"
+        fill="#3b2a1a">3</text>
+</svg>
