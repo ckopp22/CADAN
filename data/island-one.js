@@ -51,5 +51,19 @@ const ISLAND_ONE = {
     { id: "knight-5", type: "knight", pointValue: 5, order: 5, jokerResource: "BRICK" },
     { id: "knight-6", type: "knight", pointValue: 6, order: 6, jokerResource: "ANY" }
   ],
+  // Drawing coordinates (SVG units, flat-top hexes of radius 175). Not game rules.
+  layout: {
+    hexRadius: 175,
+    hexCenters: {
+      "hex-ore": [230, 930], "hex-desert": [500, 780], "hex-brick": [770, 930],
+      "hex-lumber": [770, 1250], "hex-wool": [500, 1400], "hex-grain": [230, 1250]
+    },
+    vertices: {
+      v1: [325, 780], v2: [412, 931], v3: [588, 931], v4: [675, 780], v5: [682, 1082],
+      v7: [945, 930], v8: [858, 1082], v9: [945, 1250], v10: [858, 1402], v11: [682, 1402],
+      v12: [595, 1250], v13: [588, 1552], v14: [412, 1552], v15: [325, 1400], v16: [412, 1248],
+      v17: [318, 1098], v18: [142, 1098], v20: [142, 1402]
+    }
+  },
   winCondition: { mode: "turnLimit", turns: 15 }
 };

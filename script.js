@@ -136,6 +136,62 @@ function renderDice() {
 document.getElementById("roll").addEventListener("click", rollDice);
 document.getElementById("stop").addEventListener("click", () => { state.stopped = true; renderDice(); });
 
+const HEX_COLORS = { ORE: "#8a8a94", ANY: "#d8c28a", BRICK: "#b0583a", LUMBER: "#3f6b3a", WOOL: "#8fc36a", GRAIN: "#e0b84a" };
+const SLOT_ICONS = { road: "", settlement: "\u{1F3E0}", city: "\u{1F3F0}", knight: "\u{1F6E1}\uFE0F" };
+
+// A slot is built, buildable (next in order and next to a built road where required), or locked.
+function slotState(player, slot) {
+  if (player.builtSlotIds.includes(slot.id)) return "built";
+  const slots = ISLAND_ONE.buildSlots;
+  const builtRoads = slots.filter((s) => s.type === "road" && player.builtSlotIds.includes(s.id));
+  if (slot.type === "road") {
+    return builtRoads.some((r) => r.vertices.some((v) => slot.vertices.includes(v))) ? "buildable" : "locked";
+  }
+  const nextInOrder = slots.filter((s) => s.type === slot.type && !player.builtSlotIds.includes(s.id))
+    .sort((a, b) => a.order - b.order)[0];
+  if (nextInOrder.id !== slot.id) return "locked";
+  if (slot.type === "knight") return "buildable";
+  return builtRoads.some((r) => r.vertices.includes(slot.vertex)) ? "buildable" : "locked";
+}
+
+function renderMap(player) {
+  const L = ISLAND_ONE.layout, V = L.vertices, r = L.hexRadius;
+  const mark = (state) => (state === "built" ? "\u2713" : "");
+  let svg = '<svg viewBox="20 600 960 1000" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="1000" height="1700" fill="#4a90c8"/>';
+  ISLAND_ONE.hexes.forEach((h) => {
+    const [cx, cy] = L.hexCenters[h.id];
+    const pts = [0, 60, 120, 180, 240, 300].map((a) =>
+      (cx + r * Math.cos(a * Math.PI / 180)).toFixed(0) + "," + (cy + r * Math.sin(a * Math.PI / 180)).toFixed(0)).join(" ");
+    svg += '<polygon points="' + pts + '" fill="' + HEX_COLORS[h.resource] + '" stroke="#e8d9a8" stroke-width="10"/>';
+    svg += '<text x="' + cx + '" y="' + (cy + 55) + '" font-size="90" text-anchor="middle">' +
+      (h.resource === "ANY" ? "?" : DIE_ICONS[h.resource]) + "</text>";
+  });
+  ISLAND_ONE.buildSlots.forEach((s) => {
+    const st = slotState(player, s);
+    if (s.type === "road") {
+      const [a, b] = s.vertices.map((v) => V[v]);
+      svg += '<line class="slot ' + st + '" data-slot="' + s.id + '" x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '" stroke-linecap="round"/>';
+    }
+  });
+  ISLAND_ONE.buildSlots.forEach((s) => {
+    if (s.type === "road") return;
+    const st = slotState(player, s);
+    let x, y;
+    if (s.type === "knight") {
+      const hex = ISLAND_ONE.hexes.find((h) => h.knight === s.order);
+      [x, y] = L.hexCenters[hex.id];
+      y -= 85;
+    } else {
+      [x, y] = V[s.vertex];
+    }
+    const w = s.type === "city" ? 120 : 100;
+    svg += '<g class="slot ' + st + '" data-slot="' + s.id + '"><rect x="' + (x - w / 2) + '" y="' + (y - 50) + '" width="' + w +
+      '" height="100" rx="' + (s.type === "knight" ? 50 : 14) + '"/><text x="' + x + '" y="' + (y + 22) +
+      '" font-size="62" text-anchor="middle">' + (mark(st) || s.pointValue) + "</text></g>";
+  });
+  document.getElementById("map").innerHTML = svg + "</svg>";
+}
+
 function renderPlay() {
   const done = state.turnNumber > CONSTANTS.turnsPerPlayer;
   const current = state.players[state.currentPlayerIndex];
@@ -146,6 +202,7 @@ function renderPlay() {
   document.getElementById("turn-count").textContent =
     "Turn " + Math.min(state.turnNumber, CONSTANTS.turnsPerPlayer) + " of " + CONSTANTS.turnsPerPlayer;
   document.getElementById("end-turn").disabled = done;
+  if (current) renderMap(current);
   renderDice();
 }
 
