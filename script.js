@@ -9,7 +9,7 @@ console.log("CADAN loaded");
   ["road", "settlement", "city", "knight"].forEach((type) => {
     const slots = ISLAND_ONE.buildSlots.filter((s) => s.type === type);
     html += "<h2>" + type + "s (" + slots.length + ")</h2>" + rows(slots.map((s) =>
-      s.id + ": " + s.pointValue + " pts" + (s.free ? " (free)" : "") +
+      s.id + ": " + s.pointValue + " pts" + (s.free ? " (free)" : "") + (s.vertices ? ", joins " + s.vertices.join("-") : "") + (s.vertex ? ", at " + s.vertex : "") +
       (s.jokerResource ? ", joker " + s.jokerResource : "")));
   });
   out.innerHTML = html;
