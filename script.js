@@ -45,7 +45,7 @@ document.querySelectorAll("[data-go]").forEach((b) =>
 
 // Game state and turn shell
 const state = { players: [], currentPlayerIndex: 0, turnNumber: 1, soundOn: true,
-  dice: [], rollCount: 0, stopped: false, rolling: false, spent: {} };
+  dice: [], rollCount: 0, stopped: false, rolling: false, spent: {}, jokerPending: null };
 
 const DIE_ICONS = { BRICK: "\u{1F9F1}", LUMBER: "\u{1FAB5}", WOOL: "\u{1F411}", GRAIN: "\u{1F33E}", ORE: "\u{1FAA8}", GOLD: "\u{1FA99}" };
 
@@ -55,6 +55,7 @@ function resetDice() {
   state.stopped = false;
   state.rolling = false;
   state.spent = {};
+  state.jokerPending = null;
   setMessage("");
 }
 
@@ -103,6 +104,47 @@ function renderTally(rollingOver) {
   });
 }
 
+function renderJokers(over) {
+  const player = state.players[state.currentPlayerIndex];
+  const box = document.getElementById("jokers");
+  box.innerHTML = "";
+  if (!player) return;
+  const pending = state.jokerPending;
+  ISLAND_ONE.buildSlots.filter((s) => s.type === "knight" && player.builtSlotIds.includes(s.id)).forEach((k) => {
+    const used = player.jokersUsed.includes(k.id);
+    const b = document.createElement("button");
+    b.className = "trade-btn";
+    b.textContent = "Joker " + (k.jokerResource === "ANY" ? "?" : DIE_ICONS[k.jokerResource]) + (used ? " (used)" : "");
+    b.disabled = used || !over;
+    b.addEventListener("click", () => {
+      if (pending && pending.knightId === k.id) state.jokerPending = null;
+      else state.jokerPending = { knightId: k.id, face: k.jokerResource === "ANY" ? null : k.jokerResource };
+      setMessage(state.jokerPending ? (state.jokerPending.face ? "Tap a die to turn it." : "Choose a resource.") : "");
+      renderDice();
+    });
+    box.appendChild(b);
+  });
+  if (pending && !pending.face) {
+    CONSTANTS.dieFaces.filter((f) => f !== "GOLD").forEach((f) => {
+      const b = document.createElement("button");
+      b.className = "trade-btn";
+      b.textContent = DIE_ICONS[f];
+      b.addEventListener("click", () => { pending.face = f; setMessage("Tap a die to turn it."); renderDice(); });
+      box.appendChild(b);
+    });
+  }
+}
+
+function useJoker(die) {
+  const player = state.players[state.currentPlayerIndex];
+  const { knightId, face } = state.jokerPending;
+  die.value = face;
+  player.jokersUsed.push(knightId);
+  state.jokerPending = null;
+  setMessage("Joker used.");
+  renderDice();
+}
+
 function tradeGold(face) {
   const golds = state.dice.filter((d) => d.value === "GOLD" && !d.spent);
   if (golds.length < CONSTANTS.goldTradeRate) return;
@@ -121,8 +163,13 @@ function renderDice() {
     el.className = "die" + (d.spent ? " spent" : "") + (d.kept ? " kept" : "") + (state.rolling && !d.kept ? " rolling" : "");
     el.textContent = d.value ? DIE_ICONS[d.value] : "?";
     el.title = d.value || "";
-    el.disabled = !canKeep || d.spent;
-    el.addEventListener("click", () => { d.kept = !d.kept; renderDice(); });
+    const jokerMode = !!(state.jokerPending && state.jokerPending.face);
+    el.disabled = d.spent || !(canKeep || jokerMode);
+    el.addEventListener("click", () => {
+      if (jokerMode) return useJoker(d);
+      d.kept = !d.kept;
+      renderDice();
+    });
     box.appendChild(el);
   });
   const over = state.stopped || state.rollCount >= CONSTANTS.maxRollsPerTurn;
@@ -130,6 +177,7 @@ function renderDice() {
     ? "Rolling finished (" + state.rollCount + " of " + CONSTANTS.maxRollsPerTurn + ")"
     : "Roll " + Math.min(state.rollCount + 1, CONSTANTS.maxRollsPerTurn) + " of " + CONSTANTS.maxRollsPerTurn;
   renderTally(over);
+  renderJokers(over);
   const rollBtn = document.getElementById("roll");
   rollBtn.textContent = state.rollCount === 0 ? "Roll" : "Roll Again";
   rollBtn.disabled = over || state.rolling || state.dice.every((d) => d.kept);

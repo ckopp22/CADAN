@@ -160,3 +160,6 @@ button.die.spent { opacity: 0.3; }
 
 #map .slot { cursor: pointer; }
 #message { min-height: 1.4em; margin: 0 0 0.8rem; font-weight: 700; color: var(--red); }
+
+#jokers { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.5rem; }
+#jokers button.trade-btn { width: auto; flex: 1 1 28%; }
