@@ -129,3 +129,19 @@ button.die.kept { border-color: var(--gold); background: var(--gold); }
 button.die.rolling { animation: shake 0.12s infinite; }
 button.die:disabled { opacity: 1; }
 @keyframes shake { 0% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } 100% { transform: rotate(-6deg); } }
+
+#tally { display: flex; justify-content: space-between; margin-bottom: 0.8rem; }
+.tally-item { flex: 1; font-size: 1.3rem; }
+.tally-item b { display: block; font-size: 1rem; }
+
+#trade { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.3rem; margin-bottom: 0.5rem; }
+button.trade-btn {
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0;
+  clip-path: none;
+  background: linear-gradient(var(--green), #1f3f27);
+}
+button.die.spent { opacity: 0.3; }

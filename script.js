@@ -50,7 +50,7 @@ const state = { players: [], currentPlayerIndex: 0, turnNumber: 1, soundOn: true
 const DIE_ICONS = { BRICK: "\u{1F9F1}", LUMBER: "\u{1FAB5}", WOOL: "\u{1F411}", GRAIN: "\u{1F33E}", ORE: "\u{1FAA8}", GOLD: "\u{1FA99}" };
 
 function resetDice() {
-  state.dice = CONSTANTS.dieFaces.map(() => ({ value: null, kept: false }));
+  state.dice = CONSTANTS.dieFaces.map(() => ({ value: null, kept: false, spent: false }));
   state.rollCount = 0;
   state.stopped = false;
   state.rolling = false;
@@ -77,6 +77,37 @@ function rollDice() {
   }, 60);
 }
 
+function countDice() {
+  const counts = {};
+  CONSTANTS.dieFaces.forEach((f) => { counts[f] = 0; });
+  state.dice.forEach((d) => { if (d.value && !d.spent) counts[d.value]++; });
+  return counts;
+}
+
+function renderTally(rollingOver) {
+  const counts = countDice();
+  document.getElementById("tally").innerHTML = CONSTANTS.dieFaces.map((f) =>
+    '<div class="tally-item"><span>' + DIE_ICONS[f] + "</span><b>" + counts[f] + "</b></div>").join("");
+  const trade = document.getElementById("trade");
+  trade.innerHTML = "";
+  CONSTANTS.dieFaces.filter((f) => f !== "GOLD").forEach((f) => {
+    const b = document.createElement("button");
+    b.className = "trade-btn";
+    b.textContent = "2" + DIE_ICONS.GOLD + " \u2192 " + DIE_ICONS[f];
+    b.disabled = !rollingOver || counts.GOLD < CONSTANTS.goldTradeRate;
+    b.addEventListener("click", () => tradeGold(f));
+    trade.appendChild(b);
+  });
+}
+
+function tradeGold(face) {
+  const golds = state.dice.filter((d) => d.value === "GOLD" && !d.spent);
+  if (golds.length < CONSTANTS.goldTradeRate) return;
+  golds[0].value = face;
+  golds[1].spent = true;
+  renderDice();
+}
+
 function renderDice() {
   const canKeep = state.rollCount > 0 && !state.stopped && !state.rolling &&
     state.rollCount < CONSTANTS.maxRollsPerTurn;
@@ -84,10 +115,10 @@ function renderDice() {
   box.innerHTML = "";
   state.dice.forEach((d, i) => {
     const el = document.createElement("button");
-    el.className = "die" + (d.kept ? " kept" : "") + (state.rolling && !d.kept ? " rolling" : "");
+    el.className = "die" + (d.spent ? " spent" : "") + (d.kept ? " kept" : "") + (state.rolling && !d.kept ? " rolling" : "");
     el.textContent = d.value ? DIE_ICONS[d.value] : "?";
     el.title = d.value || "";
-    el.disabled = !canKeep;
+    el.disabled = !canKeep || d.spent;
     el.addEventListener("click", () => { d.kept = !d.kept; renderDice(); });
     box.appendChild(el);
   });
@@ -95,6 +126,7 @@ function renderDice() {
   document.getElementById("roll-count").textContent = over && state.rollCount > 0
     ? "Rolling finished (" + state.rollCount + " of " + CONSTANTS.maxRollsPerTurn + ")"
     : "Roll " + Math.min(state.rollCount + 1, CONSTANTS.maxRollsPerTurn) + " of " + CONSTANTS.maxRollsPerTurn;
+  renderTally(over);
   const rollBtn = document.getElementById("roll");
   rollBtn.textContent = state.rollCount === 0 ? "Roll" : "Roll Again";
   rollBtn.disabled = over || state.rolling || state.dice.every((d) => d.kept);
