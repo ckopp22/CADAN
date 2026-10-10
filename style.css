@@ -178,3 +178,7 @@ button.die .ico { width: 2.4rem; height: 2.4rem; vertical-align: middle; }
   #play > #scoreboard { grid-column: 1 / -1; }
   #play > #map { grid-column: 1; grid-row: 2 / span 14; }
 }
+
+img.ico { object-fit: contain; }
+button.die { background: #fbf3dc; }
+#map svg { background: #8fc1d4; }

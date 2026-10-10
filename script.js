@@ -69,7 +69,7 @@ const state = { players: [], currentPlayerIndex: 0, turnNumber: 1, soundOn: true
 
 const DIE_ICONS = {};
 CONSTANTS.dieFaces.forEach((f) => {
-  DIE_ICONS[f] = '<svg class="ico" viewBox="0 0 32 32"><use href="#ico-' + f.toLowerCase() + '"/></svg>';
+  DIE_ICONS[f] = '<img class="ico" src="icons/res-' + f.toLowerCase() + '.png" alt="' + f.toLowerCase() + '">';
 });
 
 function resetDice() {
@@ -212,7 +212,7 @@ function renderDice() {
 document.getElementById("roll").addEventListener("click", rollDice);
 document.getElementById("stop").addEventListener("click", () => { state.stopped = true; renderDice(); });
 
-const HEX_COLORS = { ORE: "#8a8a94", ANY: "#d8c28a", BRICK: "#b0583a", LUMBER: "#3f6b3a", WOOL: "#8fc36a", GRAIN: "#e0b84a" };
+const HEX_COLORS = { ORE: "#9a9a9e", ANY: "#dcc08c", BRICK: "#d4553f", LUMBER: "#55a448", WOOL: "#8fc552", GRAIN: "#eaae3c" };
 
 // A slot is built, buildable (next in order and next to a built road where required), or locked.
 function slotState(player, slot) {
@@ -232,15 +232,13 @@ function slotState(player, slot) {
 function renderMap(player) {
   const L = ISLAND_ONE.layout, V = L.vertices, r = L.hexRadius;
   const mark = (state) => (state === "built" ? "\u2713" : "");
-  let svg = '<svg viewBox="20 600 960 1000" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="1000" height="1700" fill="#4a90c8"/>';
+  let svg = '<svg viewBox="20 600 960 1000" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="1000" height="1700" fill="#8fc1d4"/>';
   ISLAND_ONE.hexes.forEach((h) => {
     const [cx, cy] = L.hexCenters[h.id];
     const pts = [0, 60, 120, 180, 240, 300].map((a) =>
       (cx + r * Math.cos(a * Math.PI / 180)).toFixed(0) + "," + (cy + r * Math.sin(a * Math.PI / 180)).toFixed(0)).join(" ");
-    svg += '<polygon points="' + pts + '" fill="' + HEX_COLORS[h.resource] + '" stroke="#e8d9a8" stroke-width="10"/>';
-    svg += h.resource === "ANY"
-      ? '<text x="' + cx + '" y="' + (cy + 55) + '" font-size="90" text-anchor="middle" fill="#3b2a1a">?</text>'
-      : '<use href="#ico-' + h.resource.toLowerCase() + '" x="' + (cx - 50) + '" y="' + (cy - 5) + '" width="100" height="100"/>';
+    svg += '<polygon points="' + pts + '" fill="' + HEX_COLORS[h.resource] + '" stroke="#3b2a1a" stroke-width="7" stroke-linejoin="round"/>';
+    svg += '<image href="icons/res-' + h.resource.toLowerCase() + '.png" x="' + (cx - 70) + '" y="' + (cy - 20) + '" width="140" height="140"/>';
   });
   ISLAND_ONE.buildSlots.forEach((s) => {
     const st = slotState(player, s);
