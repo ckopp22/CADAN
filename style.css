@@ -212,10 +212,10 @@ button.die { background: #fbf3dc; }
 
 #map-key {
   position: absolute;
-  top: 0.4rem;
-  left: 0.4rem;
-  top: 1.1cqw;
-  left: 1.1cqw;
+  top: 0.8rem;
+  left: 0.8rem;
+  top: 3cqw;
+  left: 3cqw;
   padding: 4px 6px;
   padding: 1cqw 1.5cqw;
   background: rgba(251, 243, 220, 0.78);
