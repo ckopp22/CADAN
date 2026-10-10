@@ -54,6 +54,8 @@ const ISLAND_ONE = {
   // Drawing coordinates (SVG units, flat-top hexes of radius 175). Not game rules.
   layout: {
     hexRadius: 175,
+    // Moves a city marker outward toward the water (drawing only; the road vertex stays put).
+    slotShift: { "city-1": [-35, 1], "city-2": [-26, 23], "city-3": [33, 12], "city-4": [33, -12] },
     knightShift: { "hex-lumber": [45, 0], "hex-brick": [45, 0] }, // nudges a knight marker so it does not cover the hex art
     hexCenters: {
       "hex-ore": [230, 930], "hex-desert": [500, 780], "hex-brick": [770, 930],

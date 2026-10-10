@@ -283,6 +283,9 @@ function renderMap(player) {
       y += shift[1];
     } else {
       [x, y] = V[s.vertex];
+      const out = (L.slotShift && L.slotShift[s.id]) || [0, 0];
+      x += out[0];
+      y += out[1];
     }
     const sh = SHAPES[s.type];
     svg += '<g class="slot ' + st + '" data-slot="' + s.id + '" transform="translate(' + (x - 62) + " " + (y - 62) + ') scale(1.24)">' +
@@ -450,6 +453,6 @@ document.getElementById("end-turn").addEventListener("click", () => {
   renderPlay();
 });
 
-if ("serviceWorker" in navigator) {
+if ("serviceWorker" in navigator && location.hostname !== "localhost") {
   window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js").catch(() => {}));
 }
