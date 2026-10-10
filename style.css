@@ -1,3 +1,14 @@
+:root {
+  --parchment: #f1e3c0;
+  --parchment-dark: #d9c395;
+  --ink: #3b2a1a;
+  --red: #8b2e2e;
+  --red-dark: #5e1c1c;
+  --green: #2f5d3a;
+  --gold: #b8923a;
+  --stone: #6b6b66;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -5,37 +16,68 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: #f1e3c0;
-  color: #3b2a1a;
-  font-family: Georgia, serif;
+  background: radial-gradient(ellipse at center, var(--parchment) 40%, var(--parchment-dark) 100%) fixed;
+  color: var(--ink);
+  font-family: "Lora", Georgia, serif;
+}
+
+h1, h2 {
+  font-family: "Cinzel Decorative", Georgia, serif;
+  color: var(--red);
+  margin: 0 0 1rem;
 }
 
 h1 {
-  font-size: 3rem;
-  letter-spacing: 0.2em;
-  margin: 0 0 0.5rem;
+  font-size: 3.2rem;
+  letter-spacing: 0.15em;
+  text-shadow: 2px 2px 0 var(--gold);
+}
+
+h2 {
+  font-size: 1.6rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--gold);
 }
 
 .screen { display: none; }
 .screen.active { display: block; }
 
-main { padding: 1rem; max-width: 24rem; width: 100%; }
+main { padding: 1rem; max-width: 24rem; width: 100%; box-sizing: border-box; }
 
+/* Banner buttons */
 button {
   display: block;
   width: 100%;
   min-height: 48px;
-  margin: 0.5rem 0;
-  font: inherit;
-  background: #8b2e2e;
-  color: #f1e3c0;
-  border: 0;
-  border-radius: 6px;
+  margin: 0.6rem 0;
+  font: 700 1rem "Lora", Georgia, serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--parchment);
+  background: linear-gradient(var(--red), var(--red-dark));
+  border: 2px solid var(--gold);
+  border-radius: 4px;
+  box-shadow: 0 3px 0 var(--red-dark), 0 5px 8px rgba(0, 0, 0, 0.3);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 50%, 100% 100%, 0 100%, 14px 50%);
+  cursor: pointer;
 }
 
-.stepper { display: flex; align-items: center; gap: 1rem; }
-.stepper button { width: 48px; margin: 0; }
+button:active { transform: translateY(2px); }
+
+/* Wax-seal stepper buttons */
+.stepper { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
 .stepper span { flex: 1; }
+.stepper button {
+  width: 52px;
+  min-height: 52px;
+  margin: 0;
+  padding: 0;
+  font-size: 1.6rem;
+  border-radius: 50%;
+  clip-path: none;
+  background: radial-gradient(circle at 35% 35%, #b34545, var(--red-dark));
+  border: 2px solid var(--red-dark);
+}
 
 input {
   display: block;
@@ -43,8 +85,15 @@ input {
   width: 100%;
   min-height: 44px;
   margin: 0.5rem 0;
-  padding: 0 0.5rem;
+  padding: 0 0.6rem;
   font: inherit;
+  color: var(--ink);
+  background: #fbf3dc;
+  border: 2px solid var(--stone);
+  border-radius: 4px;
 }
 
+input:focus { outline: none; border-color: var(--green); }
+
 .text, #data-list { text-align: left; }
+.text p { margin: 0 0 0.8rem; }
