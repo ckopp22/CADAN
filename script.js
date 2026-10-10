@@ -378,12 +378,9 @@ document.getElementById("map").addEventListener("click", (e) => {
 function renderPlay() {
   const done = state.turnNumber > CONSTANTS.turnsPerPlayer;
   const current = state.players[state.currentPlayerIndex];
-  document.getElementById("scoreboard").innerHTML = state.players.map((p, i) =>
-    '<div class="chip' + (i === state.currentPlayerIndex && !done ? " active" : "") + '">' +
-    p.name + "<b>" + p.score + "</b></div>").join("");
-  document.getElementById("turn-player").textContent = done ? "Game complete" : current.name + "'s Turn";
-  document.getElementById("turn-count").textContent =
-    "Turn " + Math.min(state.turnNumber, CONSTANTS.turnsPerPlayer) + " of " + CONSTANTS.turnsPerPlayer;
+  document.getElementById("turn-player").textContent = done ? "Game complete"
+    : current.name + " \u00B7 Turn " + state.turnNumber + "/" + CONSTANTS.turnsPerPlayer;
+  document.getElementById("score").textContent = current.score;
   document.getElementById("end-turn").disabled = done;
   if (current) renderMap(current);
   renderDice();

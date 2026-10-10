@@ -55,7 +55,6 @@
     </section>
 
     <section id="play" class="screen">
-      <div id="scoreboard"></div>
       <div class="turn-head">
         <h2 id="turn-player"></h2>
         <button id="key-btn" aria-label="Show build costs" aria-expanded="false">
@@ -63,8 +62,10 @@
         </button>
       </div>
       <div id="key-panel" hidden></div>
-      <p id="turn-count"></p>
-      <div id="map"></div>
+      <div id="map-wrap">
+        <div id="map"></div>
+        <div id="score"></div>
+      </div>
       <p id="message"></p>
       <p id="roll-count"></p>
       <div id="dice"></div>
