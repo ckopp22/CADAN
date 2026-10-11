@@ -175,11 +175,11 @@ function renderDice() {
     const el = document.createElement("button");
     const used = !d.spent && usedLeft[d.value] > 0 && usedLeft[d.value]--;
     el.className = "die" + (d.spent ? " spent" : "") + (d.kept || used ? " kept" : "") + (state.rolling && !d.kept ? " rolling" : "");
-    if (state.jokerPending && state.jokerPending.face && !d.spent) el.className += " wobble";
+    if (state.jokerPending && state.jokerPending.face && !d.spent && !used) el.className += " wobble";
     el.innerHTML = d.value ? DIE_ICONS[d.value] : "?";
     el.title = d.value || "";
     const jokerMode = !!(state.jokerPending && state.jokerPending.face);
-    el.disabled = d.spent || !(canKeep || jokerMode);
+    el.disabled = d.spent || !(canKeep || (jokerMode && !used));
     el.addEventListener("click", () => {
       if (jokerMode) return useJoker(d);
       d.kept = !d.kept;
@@ -191,10 +191,11 @@ function renderDice() {
   renderTally(over);
   const rollBtn = document.getElementById("roll");
   rollBtn.textContent = (state.rollCount === 0 ? "Roll" : "Roll Again") + " (" + Math.min(state.rollCount + 1, CONSTANTS.maxRollsPerTurn) + "/" + CONSTANTS.maxRollsPerTurn + ")";
-  if (over && state.rollCount > 0) rollBtn.textContent = "Rolling finished (" + state.rollCount + "/" + CONSTANTS.maxRollsPerTurn + ")";
+  if (over && state.rollCount > 0) rollBtn.textContent = "Finished (" + state.rollCount + "/" + CONSTANTS.maxRollsPerTurn + ")";
   const allKept = state.rollCount > 0 && state.dice.every((d) => d.kept);
   if (allKept && !over) rollBtn.textContent = "Stop Rolling";
   rollBtn.disabled = over || state.rolling;
+  document.getElementById("end-turn").hidden = !(over && state.rollCount > 0);
 }
 
 document.getElementById("roll").addEventListener("click", () => {
