@@ -36,7 +36,10 @@ function renderLeaderboard() {
 function showScreen(id) {
   if (id === "leaderboards") renderLeaderboard();
   document.querySelectorAll(".screen").forEach((s) => s.classList.toggle("active", s.id === id));
+  window.scrollTo(0, 0);
 }
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+window.scrollTo(0, 0);
 document.querySelectorAll("[data-go]").forEach((b) =>
   b.addEventListener("click", () => showScreen(b.dataset.go)));
 
