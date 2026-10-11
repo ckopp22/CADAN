@@ -135,9 +135,6 @@ button.die.wobble { animation: shake 0.18s infinite; }
 button.die:disabled { opacity: 1; }
 @keyframes shake { 0% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } 100% { transform: rotate(-6deg); } }
 
-#tally { display: flex; justify-content: space-between; margin-bottom: 0.8rem; }
-.tally-item { flex: 1; font-size: 1.3rem; }
-.tally-item b { display: block; font-size: 1rem; }
 
 button.trade-btn {
   min-height: 44px;
@@ -172,7 +169,6 @@ button.die.spent { opacity: 0.3; }
 
 .ico { width: 1.1em; height: 1.1em; vertical-align: -0.2em; }
 button.die .ico { width: 70%; height: 70%; vertical-align: middle; }
-.tally-item .ico { width: 1.7rem; height: 1.7rem; }
 
 main:has(#play.active) { padding: 0.5rem; max-width: 28rem; }
 
@@ -264,13 +260,13 @@ body:has(#play.active) #end-game { display: block; }
 .sound-toggle.corner { left: 8px; display: block; }
 
 .roll-row { position: relative; }
-.roll-row #end-turn { position: absolute; top: 0; right: 0; bottom: 0; width: 25%; min-height: 0; margin: 0; padding: 0 0.4rem; font-size: 0.8rem; }
+.roll-row #end-turn { position: absolute; top: 0; right: 0; bottom: 0; width: 25%; min-height: 0; margin: 0; padding: 0 0.4rem; font-size: 0.8rem; border: 3px solid var(--gold); }
 .roll-row #end-turn[hidden] { display: none; }
 
 #map-wrap #gold-trade {
   position: absolute;
   right: 0.5rem;
-  bottom: 0.5rem;
+  bottom: 1.5rem;
   width: 52px;
   height: 52px;
   min-height: 0;

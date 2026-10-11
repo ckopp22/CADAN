@@ -117,8 +117,6 @@ function countDice() {
 
 function renderTally(rollingOver) {
   const counts = countDice();
-  document.getElementById("tally").innerHTML = CONSTANTS.dieFaces.map((f) =>
-    '<div class="tally-item"><span>' + DIE_ICONS[f] + "</span><b>" + counts[f] + "</b></div>").join("");
   const gb = document.getElementById("gold-trade");
   const ok = rollingOver && counts.GOLD >= CONSTANTS.goldTradeRate;
   if (!ok && state.goldPending) state.goldPending = false;
