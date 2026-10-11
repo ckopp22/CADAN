@@ -131,6 +131,7 @@ button.die {
 }
 button.die.kept { border-color: var(--gold); background: var(--gold); transform: translateY(-4px); }
 button.die.rolling { animation: shake 0.12s infinite; }
+button.die.wobble { animation: shake 0.18s infinite; }
 button.die:disabled { opacity: 1; }
 @keyframes shake { 0% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } 100% { transform: rotate(-6deg); } }
 
@@ -162,6 +163,7 @@ button.die.spent { opacity: 0.3; }
 #map g.built path.shape { fill: #2f5d3a; stroke: var(--gold); stroke-width: 6; }
 #map g.built text { fill: #f1e3c0; }
 
+#map g.active path.shape { stroke: var(--red); stroke-width: 8; }
 #map .slot { cursor: pointer; }
 #message { min-height: 1.4em; margin: 0 0 0.8rem; font-weight: 700; color: var(--red); }
 

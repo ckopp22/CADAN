@@ -129,35 +129,30 @@ function renderTally(rollingOver) {
   });
 }
 
-function renderJokers(over) {
-  const player = state.players[state.currentPlayerIndex];
+function renderJokers() {
   const box = document.getElementById("jokers");
   box.innerHTML = "";
-  if (!player) return;
   const pending = state.jokerPending;
-  ISLAND_ONE.buildSlots.filter((s) => s.type === "knight" && player.builtSlotIds.includes(s.id)).forEach((k) => {
-    const used = player.jokersUsed.includes(k.id);
-    const b = document.createElement("button");
-    b.className = "trade-btn";
-    b.innerHTML = "Joker " + (k.jokerResource === "ANY" ? "?" : DIE_ICONS[k.jokerResource]) + (used ? " (used)" : "");
-    b.disabled = used || !over;
-    b.addEventListener("click", () => {
-      if (pending && pending.knightId === k.id) state.jokerPending = null;
-      else state.jokerPending = { knightId: k.id, face: k.jokerResource === "ANY" ? null : k.jokerResource };
-      setMessage(state.jokerPending ? (state.jokerPending.face ? "Tap a die to turn it." : "Choose a resource.") : "");
-      renderDice();
-    });
-    box.appendChild(b);
-  });
   if (pending && !pending.face) {
     CONSTANTS.dieFaces.filter((f) => f !== "GOLD").forEach((f) => {
       const b = document.createElement("button");
       b.className = "trade-btn";
       b.innerHTML = DIE_ICONS[f];
-      b.addEventListener("click", () => { pending.face = f; setMessage("Tap a die to turn it."); renderDice(); });
+      b.addEventListener("click", () => { pending.face = f; setMessage("Tap a die to swap."); renderDice(); });
       box.appendChild(b);
     });
   }
+}
+
+function toggleKnight(slot) {
+  const player = state.players[state.currentPlayerIndex];
+  if (player.jokersUsed.includes(slot.id)) return setMessage("That knight is already used.");
+  if (!rollingOver()) return setMessage("Finish rolling before using a knight.");
+  const pending = state.jokerPending;
+  if (pending && pending.knightId === slot.id) state.jokerPending = null;
+  else state.jokerPending = { knightId: slot.id, face: slot.jokerResource === "ANY" ? null : slot.jokerResource };
+  setMessage(state.jokerPending ? (state.jokerPending.face ? "Tap a die to swap." : "Choose a resource.") : "");
+  renderPlay();
 }
 
 function useJoker(die) {
@@ -166,8 +161,8 @@ function useJoker(die) {
   die.value = face;
   player.jokersUsed.push(knightId);
   state.jokerPending = null;
-  setMessage("Joker used.");
-  renderDice();
+  setMessage("Knight used.");
+  renderPlay();
 }
 
 function tradeGold(face) {
@@ -186,6 +181,7 @@ function renderDice() {
   state.dice.forEach((d, i) => {
     const el = document.createElement("button");
     el.className = "die" + (d.spent ? " spent" : "") + (d.kept ? " kept" : "") + (state.rolling && !d.kept ? " rolling" : "");
+    if (state.jokerPending && state.jokerPending.face && !d.spent) el.className += " wobble";
     el.innerHTML = d.value ? DIE_ICONS[d.value] : "?";
     el.title = d.value || "";
     const jokerMode = !!(state.jokerPending && state.jokerPending.face);
@@ -199,7 +195,7 @@ function renderDice() {
   });
   const over = state.stopped || state.rollCount >= CONSTANTS.maxRollsPerTurn;
   renderTally(over);
-  renderJokers(over);
+  renderJokers();
   const rollBtn = document.getElementById("roll");
   rollBtn.textContent = (state.rollCount === 0 ? "Roll" : "Roll Again") + " (" + Math.min(state.rollCount + 1, CONSTANTS.maxRollsPerTurn) + "/" + CONSTANTS.maxRollsPerTurn + ")";
   if (over && state.rollCount > 0) rollBtn.textContent = "Rolling finished (" + state.rollCount + "/" + CONSTANTS.maxRollsPerTurn + ")";
@@ -291,9 +287,12 @@ function renderMap(player) {
       y += out[1];
     }
     const sh = SHAPES[s.type];
-    svg += '<g class="slot ' + st + '" data-slot="' + s.id + '" transform="translate(' + (x - 50 * (sh.scale || 1.24)) + " " + (y - 50 * (sh.scale || 1.24)) + ') scale(' + (sh.scale || 1.24) + ')">' +
+    const used = s.type === "knight" && player.jokersUsed.includes(s.id);
+    const active = state.jokerPending && state.jokerPending.knightId === s.id;
+    const sc = (sh.scale || 1.24) * (active ? 1.4 : 1);
+    svg += '<g class="slot ' + st + (used ? " used" : "") + (active ? " active" : "") + '" data-slot="' + s.id + '" transform="translate(' + (x - 50 * sc) + " " + (y - 50 * sc) + ') scale(' + sc + ')">' +
       '<path class="shape" d="' + sh.d + '"/>' + (sh.extra || "") +
-      '<text x="50" y="' + sh.ty + '" font-size="' + sh.fs + '" text-anchor="middle">' + s.pointValue + "</text></g>";
+      '<text x="50" y="' + sh.ty + '" font-size="' + sh.fs + '" text-anchor="middle">' + (used ? "\u2713" : s.pointValue) + "</text></g>";
   });
   document.getElementById("map").innerHTML = svg + "</svg>";
 }
@@ -354,7 +353,7 @@ function buildSlot(slotId) {
   if (!slot || state.turnNumber > CONSTANTS.turnsPerPlayer) return;
   if (!rollingOver()) return setMessage("Finish rolling before building.");
   const st = slotState(player, slot);
-  if (st === "built") return;
+  if (st === "built") return slot.type === "knight" ? toggleKnight(slot) : undefined;
   if (st === "locked") return setMessage("That slot is locked: build in ascending order, next to a built road.");
   const cost = CONSTANTS.buildCosts[slot.type];
   const counts = countDice();
