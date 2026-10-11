@@ -231,3 +231,21 @@ img.ico { object-fit: contain; }
 }
 
 #map rect.hit { fill: transparent; cursor: pointer; }
+
+#end-game {
+  display: none;
+  position: fixed;
+  top: calc(8px + env(safe-area-inset-top));
+  right: 8px;
+  z-index: 50;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  line-height: 1;
+  font-size: 20px;
+  border-radius: 50%;
+  clip-path: none;
+  margin: 0;
+}
+
+body:has(#play.active) #end-game { display: block; }
