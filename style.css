@@ -161,7 +161,8 @@ button.die.spent { opacity: 0.3; }
 
 #map g.active path.shape { stroke: var(--red); stroke-width: 8; }
 #map .slot { cursor: pointer; }
-#message { min-height: 1.4em; margin: 0 0 0.8rem; font-weight: 700; color: var(--red); }
+#message { position: absolute; left: 3cqw; bottom: 3cqw; max-width: 60cqw; margin: 0; padding: 0.2rem 0.5rem; font-size: 0.85rem; font-weight: 700; color: var(--red); background: rgba(251, 243, 220, 0.85); border-radius: 6px; pointer-events: none; }
+#message:empty { display: none; }
 
 
 #winner { font-size: 1.3rem; font-weight: 700; color: var(--green); }

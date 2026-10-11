@@ -339,8 +339,11 @@ document.querySelectorAll(".sound-toggle").forEach((b) => b.addEventListener("cl
 }));
 renderSoundToggles();
 
+let messageTimer;
 function setMessage(text) {
   document.getElementById("message").textContent = text;
+  clearTimeout(messageTimer);
+  if (text) messageTimer = setTimeout(() => { document.getElementById("message").textContent = ""; }, 4000);
 }
 
 function rollingOver() {
