@@ -241,12 +241,19 @@ function buildKey() {
 }
 buildKey();
 
+let waveNext = false;
 function renderMap(player) {
+  const wave = waveNext; waveNext = false;
   const L = ISLAND_ONE.layout, V = L.vertices, r = L.hexRadius;
   let svg = '<svg viewBox="5 440 1060 1224" xmlns="http://www.w3.org/2000/svg"><rect x="-100" y="0" width="1300" height="1800" fill="#8fc1d4"/>';
+  if (wave) for (let o = 0; o < 2; o++) {
+    let d = "";
+    for (let y = 440; y <= 1664; y += 20) d += (y === 440 ? "M" : "L") + (225 + o * 50 - y * 0.5 + Math.sin(y / 19) * 16).toFixed(0) + " " + y;
+    svg += '<path class="water-wave" d="' + d + '" style="animation-delay:' + o * 80 + 'ms"/>';
+  }
   ISLAND_ONE.hexes.forEach((h) => {
     const [cx, cy] = L.hexCenters[h.id];
-    svg += '<image href="icons/tile-' + h.resource.toLowerCase() + '.png" x="' + (cx - r) + '" y="' + (cy - r * 0.866).toFixed(0) +
+    svg += '<image' + (wave ? ' class="wave" style="animation-delay:' + Math.round((cx + cy * 0.5) * 0.6 - 300) + 'ms"' : '') + ' href="icons/tile-' + h.resource.toLowerCase() + '.png" x="' + (cx - r) + '" y="' + (cy - r * 0.866).toFixed(0) +
       '" width="' + 2 * r + '" height="' + (2 * r * 0.866).toFixed(0) + '"/>';
   });
   ISLAND_ONE.buildSlots.forEach((s) => {
@@ -471,6 +478,7 @@ document.getElementById("end-turn").addEventListener("click", () => {
   }
   if (state.turnNumber > CONSTANTS.turnsPerPlayer) return showScorecard();
   resetDice();
+  waveNext = true;
   renderPlay();
 });
 

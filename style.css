@@ -295,3 +295,8 @@ body:has(#play.active) #end-game { display: block; }
 #score-pop[hidden] { display: none; }
 #score-list { min-width: 14rem; max-width: 90vw; padding: 1rem; background: var(--parchment, #f5e9c8); border: 2px solid var(--ink); border-radius: 8px; }
 #score-list h3 { margin: 0 0 0.5rem; text-align: center; }
+
+#map image.wave { transform-box: fill-box; transform-origin: center; animation: hex-wave 0.6s ease-in-out both; }
+@keyframes hex-wave { 50% { transform: scale(1.25); } }
+#map path.water-wave { fill: none; stroke: #fff; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; opacity: 0; animation: water-wave 1s linear both; }
+@keyframes water-wave { 0% { transform: translateX(0); opacity: 0; } 15%, 85% { opacity: 0.6; } 100% { transform: translateX(1672px); opacity: 0; } }
