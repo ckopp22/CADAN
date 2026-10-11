@@ -203,12 +203,15 @@ function renderDice() {
   const rollBtn = document.getElementById("roll");
   rollBtn.textContent = (state.rollCount === 0 ? "Roll" : "Roll Again") + " (" + Math.min(state.rollCount + 1, CONSTANTS.maxRollsPerTurn) + "/" + CONSTANTS.maxRollsPerTurn + ")";
   if (over && state.rollCount > 0) rollBtn.textContent = "Rolling finished (" + state.rollCount + "/" + CONSTANTS.maxRollsPerTurn + ")";
-  rollBtn.disabled = over || state.rolling || state.dice.every((d) => d.kept);
-  document.getElementById("stop").disabled = state.rollCount === 0 || over || state.rolling;
+  const allKept = state.rollCount > 0 && state.dice.every((d) => d.kept);
+  if (allKept && !over) rollBtn.textContent = "Stop Rolling";
+  rollBtn.disabled = over || state.rolling;
 }
 
-document.getElementById("roll").addEventListener("click", rollDice);
-document.getElementById("stop").addEventListener("click", () => { state.stopped = true; renderDice(); });
+document.getElementById("roll").addEventListener("click", () => {
+  if (state.rollCount > 0 && state.dice.every((d) => d.kept)) { state.stopped = true; renderDice(); }
+  else rollDice();
+});
 
 
 // A slot is built, buildable (next in order and next to a built road where required), or locked.

@@ -263,3 +263,14 @@ body:has(#play.active) #end-game { display: block; }
 
 #end-game { right: 8px; }
 .sound-toggle.corner { left: 8px; display: block; }
+
+#map-wrap #end-turn {
+  position: absolute;
+  left: 0.5rem;
+  bottom: 0.5rem;
+  width: auto;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 1.4rem;
+  font-size: 0.85rem;
+}
