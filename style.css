@@ -266,7 +266,7 @@ body:has(#play.active) #end-game { display: block; }
 .roll-row #end-turn { position: absolute; top: 0; right: 0; bottom: 0; width: 25%; min-height: 0; margin: 0; padding: 0 0.4rem; font-size: 0.8rem; border: 3px solid var(--gold); }
 .roll-row #end-turn[hidden] { display: none; }
 @media (orientation: landscape) and (min-width: 700px) {
-  .roll-row #end-turn { position: static; width: 100%; font-size: inherit; padding: revert; margin-top: 0.5rem; min-height: revert; }
+  .roll-row #end-turn { position: static; width: 100%; font-size: 1rem; padding: revert; margin: 0; min-height: 48px; border-width: 2px; }
 }
 
 #map-wrap #gold-trade {
