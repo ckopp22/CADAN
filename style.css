@@ -196,6 +196,7 @@ img.ico { object-fit: contain; }
 #map-wrap { position: relative; margin-bottom: 1rem; container-type: inline-size; }
 #map-wrap #map { margin-bottom: 0; }
 #score {
+  cursor: pointer;
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
@@ -285,3 +286,8 @@ body:has(#play.active) #end-game { display: block; }
 #map-wrap #gold-trade.active { border-color: var(--red); background: var(--gold); }
 @keyframes pop { 0% { transform: scale(0.4); } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
 #map image.pick { cursor: pointer; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5)); }
+
+#score-pop { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.55); }
+#score-pop[hidden] { display: none; }
+#score-list { min-width: 14rem; max-width: 90vw; padding: 1rem; background: var(--parchment, #f5e9c8); border: 2px solid var(--ink); border-radius: 8px; }
+#score-list h3 { margin: 0 0 0.5rem; text-align: center; }

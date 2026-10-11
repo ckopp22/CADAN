@@ -388,6 +388,13 @@ document.getElementById("map").addEventListener("click", (e) => {
   if (el) buildSlot(el.dataset.slot);
 });
 
+document.getElementById("score").addEventListener("click", () => {
+  document.getElementById("score-list").innerHTML = "<h3>Scores</h3>" + state.players.map((p) =>
+    '<div class="chip standing' + (p === state.players[state.currentPlayerIndex] ? " active" : "") + '">' + p.name + "<b>" + p.score + "</b></div>").join("");
+  document.getElementById("score-pop").hidden = false;
+});
+document.getElementById("score-pop").addEventListener("click", (e) => { e.currentTarget.hidden = true; });
+
 function renderPlay() {
   const done = state.turnNumber > CONSTANTS.turnsPerPlayer;
   const current = state.players[state.currentPlayerIndex];
