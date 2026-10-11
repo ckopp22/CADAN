@@ -65,7 +65,7 @@ document.querySelectorAll("[data-go]").forEach((b) =>
 
 // Game state and turn shell
 const state = { players: [], currentPlayerIndex: 0, turnNumber: 1, soundOn: true,
-  dice: [], rollCount: 0, stopped: false, rolling: false, spent: {}, jokerPending: null, builtThisTurn: 0 };
+  dice: [], rollCount: 0, stopped: false, rolling: false, spent: {}, jokerPending: null, goldPending: false, builtThisTurn: 0 };
 
 const DIE_ICONS = {};
 CONSTANTS.dieFaces.forEach((f) => {
@@ -79,6 +79,7 @@ function resetDice() {
   state.rolling = false;
   state.spent = {};
   state.jokerPending = null;
+  state.goldPending = false;
   state.builtThisTurn = 0;
   setMessage("");
 }
@@ -117,41 +118,29 @@ function renderTally(rollingOver) {
   const counts = countDice();
   document.getElementById("tally").innerHTML = CONSTANTS.dieFaces.map((f) =>
     '<div class="tally-item"><span>' + DIE_ICONS[f] + "</span><b>" + counts[f] + "</b></div>").join("");
-  const trade = document.getElementById("trade");
-  trade.innerHTML = "";
-  CONSTANTS.dieFaces.filter((f) => f !== "GOLD").forEach((f) => {
-    const b = document.createElement("button");
-    b.className = "trade-btn";
-    b.innerHTML = "2" + DIE_ICONS.GOLD + " \u2192 " + DIE_ICONS[f];
-    b.disabled = !rollingOver || counts.GOLD < CONSTANTS.goldTradeRate;
-    b.addEventListener("click", () => tradeGold(f));
-    trade.appendChild(b);
-  });
+  const gb = document.getElementById("gold-trade");
+  const ok = rollingOver && counts.GOLD >= CONSTANTS.goldTradeRate;
+  if (!ok && state.goldPending) state.goldPending = false;
+  gb.hidden = !ok;
+  gb.classList.toggle("active", !!state.goldPending);
 }
 
-function renderJokers() {
-  const box = document.getElementById("jokers");
-  box.innerHTML = "";
-  const pending = state.jokerPending;
-  if (pending && !pending.face) {
-    CONSTANTS.dieFaces.filter((f) => f !== "GOLD").forEach((f) => {
-      const b = document.createElement("button");
-      b.className = "trade-btn";
-      b.innerHTML = DIE_ICONS[f];
-      b.addEventListener("click", () => { pending.face = f; setMessage("Tap a die to swap."); renderDice(); });
-      box.appendChild(b);
-    });
-  }
-}
+document.getElementById("gold-trade").addEventListener("click", () => {
+  state.goldPending = !state.goldPending;
+  state.jokerPending = null;
+  setMessage(state.goldPending ? "Tap a hex to trade 2 gold for it." : "");
+  renderPlay();
+});
 
 function toggleKnight(slot) {
   const player = state.players[state.currentPlayerIndex];
   if (player.jokersUsed.includes(slot.id)) return setMessage("That knight is already used.");
   if (!rollingOver()) return setMessage("Finish rolling before using a knight.");
   const pending = state.jokerPending;
+  state.goldPending = false;
   if (pending && pending.knightId === slot.id) state.jokerPending = null;
   else state.jokerPending = { knightId: slot.id, face: slot.jokerResource === "ANY" ? null : slot.jokerResource };
-  setMessage(state.jokerPending ? (state.jokerPending.face ? "Tap a die to swap." : "Choose a resource.") : "");
+  setMessage(state.jokerPending ? (state.jokerPending.face ? "Tap a die to swap." : "Tap a hex to choose a resource.") : "");
   renderPlay();
 }
 
@@ -170,7 +159,9 @@ function tradeGold(face) {
   if (golds.length < CONSTANTS.goldTradeRate) return;
   golds[0].value = face;
   golds[1].spent = true;
-  renderDice();
+  setMessage("");
+  state.goldPending = false;
+  renderPlay();
 }
 
 function renderDice() {
@@ -195,7 +186,6 @@ function renderDice() {
   });
   const over = state.stopped || state.rollCount >= CONSTANTS.maxRollsPerTurn;
   renderTally(over);
-  renderJokers();
   const rollBtn = document.getElementById("roll");
   rollBtn.textContent = (state.rollCount === 0 ? "Roll" : "Roll Again") + " (" + Math.min(state.rollCount + 1, CONSTANTS.maxRollsPerTurn) + "/" + CONSTANTS.maxRollsPerTurn + ")";
   if (over && state.rollCount > 0) rollBtn.textContent = "Rolling finished (" + state.rollCount + "/" + CONSTANTS.maxRollsPerTurn + ")";
@@ -294,6 +284,14 @@ function renderMap(player) {
       '<path class="shape" d="' + sh.d + '"/>' + (sh.extra || "") +
       '<text x="50" y="' + sh.ty + '" font-size="' + sh.fs + '" text-anchor="middle">' + (used ? "\u2713" : s.pointValue) + "</text></g>";
   });
+  const knightPick = state.jokerPending && !state.jokerPending.face;
+  if (state.goldPending || knightPick) {
+    ISLAND_ONE.hexes.filter((h) => h.resource !== "ANY").forEach((h) => {
+      const [cx, cy] = L.hexCenters[h.id], w = 2 * r * 1.3, ht = w * 0.866;
+      svg += '<image class="pick" data-trade="' + h.resource + '" href="icons/tile-' + h.resource.toLowerCase() + '.png" x="' + (cx - w / 2) +
+        '" y="' + (cy - ht / 2).toFixed(0) + '" width="' + w + '" height="' + ht.toFixed(0) + '"/>';
+    });
+  }
   document.getElementById("map").innerHTML = svg + "</svg>";
 }
 
@@ -372,6 +370,15 @@ function buildSlot(slotId) {
 }
 
 document.getElementById("map").addEventListener("click", (e) => {
+  const pick = e.target.closest("[data-trade]");
+  if (pick) {
+    if (state.jokerPending && !state.jokerPending.face) {
+      state.jokerPending.face = pick.dataset.trade;
+      setMessage("Tap a die to swap.");
+      return renderPlay();
+    }
+    return tradeGold(pick.dataset.trade);
+  }
   const el = e.target.closest("[data-slot]");
   if (el) buildSlot(el.dataset.slot);
 });
