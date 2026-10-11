@@ -101,6 +101,7 @@ function rollDice() {
     if (++ticks >= 8) {
       clearInterval(timer);
       state.rolling = false;
+      if (state.rollCount >= CONSTANTS.maxRollsPerTurn) state.dice.forEach((d) => { d.kept = false; });
       renderDice();
     }
   }, 60);
@@ -169,9 +170,11 @@ function renderDice() {
     state.rollCount < CONSTANTS.maxRollsPerTurn;
   const box = document.getElementById("dice");
   box.innerHTML = "";
+  const usedLeft = Object.assign({}, state.spent);
   state.dice.forEach((d, i) => {
     const el = document.createElement("button");
-    el.className = "die" + (d.spent ? " spent" : "") + (d.kept ? " kept" : "") + (state.rolling && !d.kept ? " rolling" : "");
+    const used = !d.spent && usedLeft[d.value] > 0 && usedLeft[d.value]--;
+    el.className = "die" + (d.spent ? " spent" : "") + (d.kept || used ? " kept" : "") + (state.rolling && !d.kept ? " rolling" : "");
     if (state.jokerPending && state.jokerPending.face && !d.spent) el.className += " wobble";
     el.innerHTML = d.value ? DIE_ICONS[d.value] : "?";
     el.title = d.value || "";
