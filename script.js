@@ -282,7 +282,7 @@ function renderMap(player) {
     const sc = (sh.scale || 1.24) * (active ? 1.4 : 1);
     svg += '<g class="slot ' + st + (used ? " used" : "") + (active ? " active" : "") + '" data-slot="' + s.id + '" transform="translate(' + (x - 50 * sc) + " " + (y - 50 * sc) + ') scale(' + sc + ')">' +
       '<path class="shape" d="' + sh.d + '"/>' + (sh.extra || "") +
-      '<text x="50" y="' + sh.ty + '" font-size="' + sh.fs + '" text-anchor="middle">' + (used ? "" : s.pointValue) + "</text></g>";
+      '<text x="50" y="' + sh.ty + '" font-size="' + sh.fs + '" text-anchor="middle">' + (used ? "\u2713" : st === "built" ? "" : s.pointValue) + "</text></g>";
   });
   const knightPick = state.jokerPending && !state.jokerPending.face;
   if (state.goldPending || knightPick) {
