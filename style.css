@@ -213,6 +213,17 @@ img.ico { object-fit: contain; }
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+#turn-count {
+  position: absolute;
+  top: 3.4rem;
+  right: 0.5rem;
+  padding: 0.1rem 0.5rem;
+  font: 700 0.8rem "Lora", Georgia, serif;
+  color: var(--ink);
+  background: rgba(251, 243, 220, 0.85);
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+}
 
 #map-key {
   position: absolute;
