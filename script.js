@@ -326,7 +326,7 @@ function playSound(name) {
 
 function renderSoundToggles() {
   document.querySelectorAll(".sound-toggle").forEach((b) => {
-    b.textContent = "Sound: " + (state.soundOn ? "On" : "Off");
+    b.textContent = b.classList.contains("corner") ? (state.soundOn ? "🔊" : "🔇") : "Sound: " + (state.soundOn ? "On" : "Off");
   });
 }
 document.querySelectorAll(".sound-toggle").forEach((b) => b.addEventListener("click", () => {
