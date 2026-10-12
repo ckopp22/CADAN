@@ -27,7 +27,7 @@ function saveJSON(key, value) {
 }
 
 function renderLeaderboard() {
-  const results = loadJSON("cadan-leaderboard", []);
+  const results = loadJSON("cadan-leaderboard", []).sort((a, b) => b.score - a.score).slice(0, 5);
   document.getElementById("leaderboard-list").innerHTML = results.length
     ? results.map((r) => '<div class="chip standing">' + r.name + " <small>" + r.date + "</small><b>" + r.score + "</b></div>").join("")
     : "<p>No games saved yet.</p>";
@@ -37,7 +37,25 @@ function showScreen(id) {
   if (id === "leaderboards") renderLeaderboard();
   document.querySelectorAll(".screen").forEach((s) => s.classList.toggle("active", s.id === id));
   window.scrollTo(0, 0);
+  fitScreen();
 }
+
+// No page scrolling: shrink the whole page to fit the viewport height when a screen is taller than it
+const mainEl = document.querySelector("main");
+let fitQueued = false;
+function fitScreen() {
+  mainEl.style.zoom = 1;
+  const h = mainEl.offsetHeight;
+  mainEl.style.zoom = h > window.innerHeight ? window.innerHeight / h : 1;
+}
+function queueFit() {
+  if (fitQueued) return;
+  fitQueued = true;
+  requestAnimationFrame(() => { fitQueued = false; fitScreen(); });
+}
+new MutationObserver(queueFit).observe(mainEl, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ["class", "hidden"] });
+window.addEventListener("resize", queueFit);
+window.addEventListener("load", queueFit);
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 window.scrollTo(0, 0);
 document.querySelectorAll("[data-go]").forEach((b) =>
@@ -46,11 +64,10 @@ document.querySelectorAll("[data-go]").forEach((b) =>
 // Player setup: 1-6 players with optional names
 (function () {
   const names = document.getElementById("names");
-  const count = document.getElementById("count");
   const saved = loadJSON("cadan-setup", { count: 1, names: [] });
   let n = Math.min(6, Math.max(1, saved.count || 1));
   function render() {
-    count.textContent = n;
+    document.getElementById("fewer").style.display = n > 1 ? "" : "none";
     const current = Array.from(names.querySelectorAll("input")).map((i) => i.value);
     const old = current.length ? current : saved.names || [];
     names.innerHTML = "";
@@ -167,6 +184,24 @@ function tradeGold(face) {
   renderPlay();
 }
 
+// Slowly wobble every piece the current player can build with their unspent dice
+function refreshWobble() {
+  const cur = state.players[state.currentPlayerIndex];
+  const on = cur && state.rollCount > 0 && !state.rolling && state.turnNumber <= CONSTANTS.turnsPerPlayer &&
+    !state.jokerPending && !state.goldPending;
+  const counts = countDice();
+  document.querySelectorAll("#map [data-wb]").forEach((el) => {
+    let ok = false;
+    if (on) {
+      const slot = ISLAND_ONE.buildSlots.find((s) => s.id === el.dataset.wb);
+      const cost = CONSTANTS.buildCosts[slot.type];
+      ok = slotState(cur, slot) === "buildable" && Object.keys(cost).every((r) => counts[r.toUpperCase()] >= cost[r]);
+    }
+    el.classList.toggle("wobble", ok);
+    el.firstElementChild.classList.toggle("afford", ok);
+  });
+}
+
 function renderDice() {
   const canKeep = state.rollCount > 0 && !state.stopped && !state.rolling &&
     state.rollCount < CONSTANTS.maxRollsPerTurn;
@@ -191,6 +226,7 @@ function renderDice() {
   });
   const over = state.stopped || state.rollCount >= CONSTANTS.maxRollsPerTurn;
   renderTally(over);
+  refreshWobble();
   const rollBtn = document.getElementById("roll");
   rollBtn.textContent = (state.rollCount === 0 ? "Roll" : "Roll Again") + " (" + Math.min(state.rollCount + 1, CONSTANTS.maxRollsPerTurn) + "/" + CONSTANTS.maxRollsPerTurn + ")";
   if (over && state.rollCount > 0) rollBtn.textContent = "Finished (" + state.rollCount + "/" + CONSTANTS.maxRollsPerTurn + ")";
@@ -267,7 +303,7 @@ function renderMap(player) {
       const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
       const deg = Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI;
       const rot = '" transform="rotate(' + deg.toFixed(1) + " " + mx + " " + my + ')"/>';
-      svg += '<rect class="slot road ' + st + '" x="' + (mx - 55) + '" y="' + (my - 11) + '" width="110" height="22" rx="5' + rot;
+      svg += '<g class="wb" data-wb="' + s.id + '">' + '<rect class="slot road ' + st + '" x="' + (mx - 55) + '" y="' + (my - 11) + '" width="110" height="22" rx="5' + rot + "</g>";
       // Invisible larger tap area for the road
       svg += '<rect class="hit" fill="transparent" data-slot="' + s.id + '" x="' + (mx - 65) + '" y="' + (my - 30) + '" width="130" height="60' + rot;
     }
@@ -293,9 +329,9 @@ function renderMap(player) {
     const used = s.type === "knight" && player.jokersUsed.includes(s.id);
     const active = state.jokerPending && state.jokerPending.knightId === s.id;
     const sc = (sh.scale || 1.24) * (active ? 1.4 : 1);
-    svg += '<g class="slot ' + st + (used ? " used" : "") + (active ? " active" : "") + '" data-slot="' + s.id + '" transform="translate(' + (x - 50 * sc) + " " + (y - 50 * sc) + ') scale(' + sc + ')">' +
+    svg += '<g class="wb" data-wb="' + s.id + '"><g class="slot ' + st + (used ? " used" : "") + (active ? " active" : "") + '" data-slot="' + s.id + '" transform="translate(' + (x - 50 * sc) + " " + (y - 50 * sc) + ') scale(' + sc + ')">' +
       '<path class="shape" d="' + sh.d + '"/>' + (sh.extra || "") +
-      '<text x="50" y="' + sh.ty + '" font-size="' + sh.fs + '" text-anchor="middle">' + (used ? "\u2713" : st === "built" ? "" : s.pointValue) + "</text></g>";
+      '<text x="50" y="' + sh.ty + '" font-size="' + sh.fs + '" text-anchor="middle">' + (used ? "\u2713" : st === "built" ? "" : s.pointValue) + "</text></g></g>";
   });
   const knightPick = state.jokerPending && !state.jokerPending.face;
   if (state.goldPending || knightPick) {
@@ -351,9 +387,7 @@ function playSound(name) {
 }
 
 function renderSoundToggles() {
-  document.querySelectorAll(".sound-toggle").forEach((b) => {
-    b.textContent = b.classList.contains("corner") ? (state.soundOn ? "🔊" : "🔇") : "Sound: " + (state.soundOn ? "On" : "Off");
-  });
+  document.querySelectorAll(".sound-toggle").forEach((b) => b.classList.toggle("off", !state.soundOn));
 }
 document.querySelectorAll(".sound-toggle").forEach((b) => b.addEventListener("click", () => {
   state.soundOn = !state.soundOn;
@@ -362,6 +396,52 @@ document.querySelectorAll(".sound-toggle").forEach((b) => b.addEventListener("cl
   playSound("build");
 }));
 renderSoundToggles();
+
+// Background music: whistler intro, then the two loops alternate. Starts on the splash tap.
+state.musicOn = loadJSON("cadan-music", true) !== false;
+const MUSIC_INTRO = "sounds/whistler.mp3";
+const MUSIC_LOOP = ["sounds/medieval_whistle_loop.mp3", "sounds/gameplay_1_tavern_jig.mp3"];
+const music = new Audio(MUSIC_INTRO);
+music.volume = 0.15;
+let musicNext = 0;
+let musicStarted = false;
+music.addEventListener("ended", () => {
+  music.src = MUSIC_LOOP[musicNext++ % MUSIC_LOOP.length];
+  music.play().catch(() => {});
+});
+function startMusic() {
+  musicStarted = true;
+  if (state.musicOn) music.play().catch(() => {});
+}
+function renderMusicToggles() {
+  document.querySelectorAll(".music-toggle").forEach((b) => b.classList.toggle("off", !state.musicOn));
+}
+document.querySelectorAll(".music-toggle").forEach((b) => b.addEventListener("click", () => {
+  state.musicOn = !state.musicOn;
+  saveJSON("cadan-music", state.musicOn);
+  renderMusicToggles();
+  if (state.musicOn) { musicStarted = true; music.play().catch(() => {}); }
+  else music.pause();
+}));
+renderMusicToggles();
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) music.pause();
+  else if (state.musicOn && musicStarted) music.play().catch(() => {});
+});
+
+// Splash: tap the die to roll it, which also unlocks audio, then go to the menu
+const ROLL_ANIM = new Image();
+ROLL_ANIM.src = "ui/dice_roll.webp";
+document.addEventListener("click", function (e) {
+  if (!document.getElementById("splash").classList.contains("active") || e.target.closest("#audio-toggles")) return;
+  const die = document.getElementById("splash-die");
+  if (die.classList.contains("rolling")) return;
+  die.classList.add("rolling");
+  die.src = ROLL_ANIM.src;
+  playSound("roll");
+  startMusic();
+  setTimeout(() => showScreen("menu"), 1200);
+});
 
 let messageTimer;
 function setMessage(text) {

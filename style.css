@@ -9,11 +9,13 @@
   --stone: #6b6b66;
 }
 
-html { background: var(--parchment-dark) url("ui/bg_parchment_tile.png"); }
+html { height: 100%; overflow: hidden; background: var(--parchment-dark) url("ui/bg_parchment_tile.png"); }
 
 body {
   margin: 0;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -86,14 +88,19 @@ button:not(.die):not(.trade-btn):not(.corner):not(#gold-trade):not(#end-game):no
 button:not(.die):not(.trade-btn):not(.corner):not(#gold-trade):not(#end-game):not(#fewer):not(#more):disabled { border-image-source: url("ui/btn_royal_disabled.png"); color: #b9a98c; cursor: not-allowed; }
 
 /* Wax-seal stepper buttons */
-.stepper { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
-.stepper span { flex: 1; }
+.stepper { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem; }
+.stepper span {
+  flex: 1; box-sizing: border-box; min-height: 64px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: var(--ink);
+  border: solid transparent; border-width: 0 28px; border-image: url("ui/scroll_banner.png") 0 90 fill / 0 28px stretch;
+}
 .stepper button {
-  width: 52px;
-  min-height: 52px;
+  width: 40px;
+  min-height: 40px;
   margin: 0;
   padding: 0;
-  font-size: 1.6rem;
+  font-size: 1.3rem;
   border-radius: 50%;
   clip-path: none;
   background: radial-gradient(circle at 35% 35%, #b34545, var(--red-dark));
@@ -174,11 +181,13 @@ button.die.spent { opacity: 0.3; }
 #map svg { width: 100%; height: auto; display: block; border: 3px solid var(--gold); border-radius: 6px; }
 #map rect.road { stroke: #c9ccce; stroke-width: 4; }
 #map rect.road.locked { fill: #b9bcbf; opacity: 0.8; }
-#map rect.road.buildable { fill: #f4d03f; }
+#map rect.road.buildable { fill: #8a8d90; }
+#map rect.road.afford { fill: #f4d03f; }
 #map rect.road.built { fill: #2f5d3a; }
 #map g.slot text { fill: var(--ink); font-family: "Lora", Georgia, serif; font-weight: 700; }
 #map g.locked path.shape { fill: #b9bcbf; stroke: #6b6b66; stroke-width: 6; opacity: 0.85; }
-#map g.buildable path.shape { fill: #f4d03f; stroke: var(--red); stroke-width: 10; }
+#map g.buildable path.shape { fill: #8a8d90; stroke: #4a4a46; stroke-width: 8; }
+#map g.afford path.shape { fill: #f4d03f; stroke: var(--red); stroke-width: 10; }
 #map g.built path.shape { fill: #2f5d3a; stroke: var(--gold); stroke-width: 6; }
 #map g.built text { fill: #f1e3c0; }
 
@@ -270,7 +279,7 @@ img.ico { object-fit: contain; }
 
 #map rect.hit { fill: transparent; cursor: pointer; }
 
-#end-game, .sound-toggle.corner {
+#end-game, .sound-toggle.corner, .music-toggle.corner {
   display: none;
   flex: none;
   width: 32px;
@@ -306,13 +315,16 @@ body:has(#play.active) #end-game { display: block; }
 }
 #end-game:hover { background-image: url("ui/seal_red_sword_hover.png"); }
 #end-game:active { background-image: url("ui/seal_red_sword_pressed.png"); transform: translateY(1px); padding: 0; }
-.sound-toggle.corner { display: block; }
+.sound-toggle.corner, .music-toggle.corner { display: block; }
 
-.roll-row { position: relative; }
-.roll-row #end-turn { position: absolute; top: 0; right: 0; bottom: 0; width: 25%; min-height: 0; margin: 0; padding: 0 0.4rem; font-size: 0.8rem; border: 3px solid var(--gold); }
+.roll-row { display: flex; gap: 0.4rem; }
+.roll-row button { margin: 0.4rem 0; }
+.roll-row #roll { flex: 1; min-width: 0; }
+.roll-row #end-turn { flex: 0 0 38%; min-width: 0; font-size: 0.85rem; }
 .roll-row #end-turn[hidden] { display: none; }
 @media (orientation: landscape) and (min-width: 700px) {
-  .roll-row #end-turn { position: static; width: 100%; font-size: 1rem; padding: revert; margin: 0; min-height: 48px; border-width: 2px; }
+  .roll-row { flex-direction: column; gap: 0; }
+  .roll-row #end-turn { flex: none; font-size: 1rem; }
 }
 
 #map-wrap #gold-trade {
@@ -349,13 +361,54 @@ body:has(#play.active) #end-game { display: block; }
 
 #menu button { margin: 0.1rem 0; }
 
-#how .text, #leaderboard-list {
-  padding: 1rem;
+#how .text, #leaderboard-list, #menu {
+  box-sizing: border-box;
   margin-bottom: 1rem;
-  background: linear-gradient(rgba(255, 248, 225, 0.85), rgba(241, 227, 192, 0.85));
-  border: 2px solid var(--gold);
-  border-radius: 6px;
-  box-shadow: inset 0 0 0 3px rgba(184, 146, 58, 0.25), 0 3px 8px rgba(0, 0, 0, 0.25);
+  border: solid transparent;
+  border-width: 36px;
+  border-image: url("ui/panel_parchment.png") 72 fill / 36px stretch;
 }
 #how .text p:last-child { margin-bottom: 0; }
 #leaderboard-list .chip { background: none; }
+
+#audio-toggles { position: absolute; top: calc(0.5rem + env(safe-area-inset-top)); left: 0.5rem; z-index: 10; display: flex; gap: 6px; }
+#audio-toggles button { margin: 0; }
+#play .turn-head { padding-left: 80px; }
+
+#splash { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+#splash-die { display: block; width: 100%; max-width: 300px; height: auto; margin: 0.5rem auto; }
+
+#menu { margin: 0 -1rem 1rem; padding: 2.5rem 1rem; }
+.divider { display: block; width: 80%; max-width: 260px; height: auto; margin: 0 auto 1rem; }
+
+#names input {
+  min-height: 64px; margin: 0; padding: 0 0.2rem;
+  text-align: center; font-weight: 700;
+  background: none;
+  border: solid transparent; border-width: 0 28px; border-radius: 0;
+  border-image: url("ui/scroll_banner.png") 0 90 fill / 0 28px stretch;
+}
+#names input::placeholder { color: rgba(59, 42, 26, 0.5); }
+#names input:focus { filter: drop-shadow(0 0 5px var(--gold)); }
+
+/* Medieval wax-seal audio toggles */
+#audio-toggles button {
+  width: 40px; height: 40px; font-size: 0; color: transparent; text-shadow: none;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f3d98a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 9v6h4l5 4V5L7 9z' fill='%23f3d98a'/><path d='M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12'/></svg>") center / 62% no-repeat,
+    radial-gradient(circle at 35% 30%, #b34545, #5e1c1c 80%);
+  border: 2px solid var(--gold); border-radius: 50%;
+  box-shadow: inset 0 0 0 3px rgba(58, 10, 16, 0.55), 0 2px 0 #3a0a10, 0 3px 6px rgba(0, 0, 0, 0.4);
+}
+#audio-toggles .sound-toggle.off {
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f3d98a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 9v6h4l5 4V5L7 9z' fill='%23f3d98a'/><path d='M16 9l6 6M22 9l-6 6'/></svg>"), radial-gradient(circle at 35% 30%, #b34545, #5e1c1c 80%);
+}
+#audio-toggles .music-toggle {
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f3d98a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 17V5l11-2v12'/><circle cx='6.5' cy='17.5' r='2.5' fill='%23f3d98a'/><circle cx='17.5' cy='15.5' r='2.5' fill='%23f3d98a'/></svg>"), radial-gradient(circle at 35% 30%, #b34545, #5e1c1c 80%);
+}
+#audio-toggles .music-toggle.off {
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f3d98a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 17V5l11-2v12'/><circle cx='6.5' cy='17.5' r='2.5' fill='%23f3d98a'/><circle cx='17.5' cy='15.5' r='2.5' fill='%23f3d98a'/><path d='M3 3l18 18'/></svg>"), radial-gradient(circle at 35% 30%, #b34545, #5e1c1c 80%);
+}
+#audio-toggles button:active { transform: translateY(1px); padding: 0; }
+
+#map .wb.wobble { transform-box: fill-box; transform-origin: center; animation: build-wobble 2.5s ease-in-out infinite; }
+@keyframes build-wobble { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
