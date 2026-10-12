@@ -455,3 +455,7 @@ body:has(#menu.active) #share-btn { display: block; }
   background: var(--red-dark); border: 2px solid var(--gold); border-radius: 6px;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4); pointer-events: none;
 }
+
+/* Main menu: very blurry, enlarged picture of the board behind the panel */
+html:has(:is(#menu, #leaderboards, #how, #setup).active) { background: #8fc1d4 url("ui/menu_bg.jpg") center / cover no-repeat; }
+body:has(:is(#menu, #leaderboards, #how, #setup).active) { background: none; }
