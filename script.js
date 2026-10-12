@@ -34,6 +34,7 @@ function renderLeaderboard() {
 }
 
 function showScreen(id) {
+  if (id !== "scorecard") stopResultsMusic();
   if (id === "leaderboards") renderLeaderboard();
   document.querySelectorAll(".screen").forEach((s) => s.classList.toggle("active", s.id === id));
   window.scrollTo(0, 0);
@@ -169,7 +170,7 @@ function useJoker(die) {
   die.value = face;
   player.jokersUsed.push(knightId);
   state.jokerPending = null;
-  playSound("knight");
+  playSound("trade");
   setMessage("Knight used.");
   renderPlay();
 }
@@ -181,6 +182,7 @@ function tradeGold(face) {
   golds[1].spent = true;
   setMessage("");
   state.goldPending = false;
+  playSound("trade");
   renderPlay();
 }
 
@@ -358,7 +360,9 @@ const FILE_SOUNDS = {
   roll: new Audio("sounds/dice-shake.mp3"),
   build: new Audio("sounds/build.mp3"),
   knight: new Audio("sounds/knight.mp3"),
-  turnEnd: new Audio("sounds/end-turn.mp3")
+  turnEnd: new Audio("sounds/end-turn.mp3"),
+  trade: new Audio("sounds/trade.mp3"),
+  menu: new Audio("sounds/menu-button.mp3")
 };
 Object.values(FILE_SOUNDS).forEach((a) => { a.preload = "auto"; a.load(); });
 
@@ -386,6 +390,10 @@ function playSound(name) {
   } catch (e) { /* audio unavailable */ }
 }
 
+document.addEventListener("click", (e) => {
+  if (e.target.closest("button[data-go], #start, #save-result, #more, #fewer")) playSound("menu");
+});
+
 function renderSoundToggles() {
   document.querySelectorAll(".sound-toggle").forEach((b) => b.classList.toggle("off", !state.soundOn));
 }
@@ -409,6 +417,32 @@ music.addEventListener("ended", () => {
   music.src = MUSIC_LOOP[musicNext++ % MUSIC_LOOP.length];
   music.play().catch(() => {});
 });
+// Final standings: fanfare, then the scoreboard tune loops until the player leaves the screen
+const FANFARE = new Audio("sounds/fanfare.mp3");
+const SCOREBOARD = new Audio("sounds/scoreboard.mp3");
+FANFARE.volume = 0.8;
+SCOREBOARD.volume = 0.3;
+SCOREBOARD.loop = true;
+let resultsActive = false;
+function playScoreboard() {
+  if (resultsActive && state.musicOn) SCOREBOARD.play().catch(() => {});
+}
+FANFARE.addEventListener("ended", playScoreboard);
+function startResultsMusic() {
+  resultsActive = true;
+  music.pause();
+  FANFARE.pause(); FANFARE.currentTime = 0;
+  SCOREBOARD.pause(); SCOREBOARD.currentTime = 0;
+  if (state.soundOn) FANFARE.play().catch(() => {});
+  else playScoreboard();
+}
+function stopResultsMusic() {
+  if (!resultsActive) return;
+  resultsActive = false;
+  FANFARE.pause();
+  SCOREBOARD.pause();
+  if (state.musicOn && musicStarted) music.play().catch(() => {});
+}
 function startMusic() {
   musicStarted = true;
   if (state.musicOn) music.play().catch(() => {});
@@ -420,13 +454,16 @@ document.querySelectorAll(".music-toggle").forEach((b) => b.addEventListener("cl
   state.musicOn = !state.musicOn;
   saveJSON("cadan-music", state.musicOn);
   renderMusicToggles();
-  if (state.musicOn) { musicStarted = true; music.play().catch(() => {}); }
-  else music.pause();
+  if (state.musicOn) {
+    musicStarted = true;
+    if (!resultsActive) music.play().catch(() => {});
+    else if (FANFARE.paused) playScoreboard();
+  } else { music.pause(); SCOREBOARD.pause(); }
 }));
 renderMusicToggles();
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) music.pause();
-  else if (state.musicOn && musicStarted) music.play().catch(() => {});
+  else if (state.musicOn && musicStarted && !resultsActive) music.play().catch(() => {});
 });
 
 // Splash: tap the die to roll it, which also unlocks audio, then go to the menu
@@ -440,7 +477,8 @@ document.addEventListener("click", function (e) {
   die.src = ROLL_ANIM.src;
   playSound("roll");
   startMusic();
-  setTimeout(() => showScreen("menu"), 1200);
+  setTimeout(() => die.classList.add("shrink"), 600);
+  setTimeout(() => showScreen("menu"), 1300);
 });
 
 let messageTimer;
@@ -533,7 +571,7 @@ function showScorecard() {
   const ranked = state.players.slice().sort((a, b) => b.score - a.score);
   const top = ranked[0].score;
   const winners = ranked.filter((p) => p.score === top);
-  playSound("win");
+  startResultsMusic();
   document.getElementById("winner").textContent = winners.length === 1
     ? winners[0].name + " wins!"
     : "Tie: " + winners.map((p) => p.name).join(" & ");

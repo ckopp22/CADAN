@@ -361,7 +361,7 @@ body:has(#play.active) #end-game { display: block; }
 
 #menu button { margin: 0.1rem 0; }
 
-#how .text, #leaderboard-list, #menu {
+#how .text, #leaderboard-list, #menu, #results-panel {
   box-sizing: border-box;
   margin-bottom: 1rem;
   border: solid transparent;
@@ -369,7 +369,13 @@ body:has(#play.active) #end-game { display: block; }
   border-image: url("ui/panel_parchment.png") 72 fill / 36px stretch;
 }
 #how .text p:last-child { margin-bottom: 0; }
-#leaderboard-list .chip { background: none; }
+#leaderboard-list .chip { display: flex; align-items: baseline; gap: 0.5rem; padding: 0.3rem 0; font-size: 1.15rem; background: none; border: 0; }
+#leaderboard-list .chip small { flex: 1; text-align: left; opacity: 0.7; }
+#leaderboard-list .chip b { margin-left: 1.2rem; font-size: 1.3rem; }
+#standings .chip { background: none; border: 0; padding: 0.2rem 0; }
+#standings .chip.active { font-weight: 700; color: var(--green); }
+#winner { margin-top: 0; }
+#standings .chip:last-child { margin-bottom: 0; }
 
 #audio-toggles { position: absolute; top: calc(0.5rem + env(safe-area-inset-top)); left: 0.5rem; z-index: 10; display: flex; gap: 6px; }
 #audio-toggles button { margin: 0; }
@@ -412,3 +418,22 @@ body:has(#play.active) #end-game { display: block; }
 
 #map .wb.wobble { transform-box: fill-box; transform-origin: center; animation: build-wobble 2.5s ease-in-out infinite; }
 @keyframes build-wobble { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+
+#splash-die.shrink { animation: splash-shrink 0.7s ease-in forwards; }
+@keyframes splash-shrink { to { transform: scale(0.05); opacity: 0; } }
+
+.stepper button {
+  width: 96px; min-height: 48px; padding: 0 0 2px;
+  font-size: 1.5rem; line-height: 1; color: var(--ink); text-shadow: none;
+  background: none; border-radius: 0;
+  border: solid transparent; border-width: 0 22px;
+  border-image: url("ui/scroll_banner.png") 0 90 fill / 0 22px stretch;
+}
+.stepper button:active { transform: translateY(1px); }
+
+/* Small Back buttons */
+section:not(#scorecard) > button[data-go="menu"] {
+  width: 67%; min-height: 50px; margin: 0.6rem auto;
+  padding: 0; font-size: 0.9rem; letter-spacing: 0.06em;
+  border-width: 18px; border-image-width: 18px;
+}
