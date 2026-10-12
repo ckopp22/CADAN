@@ -152,10 +152,15 @@ document.getElementById("gold-trade").addEventListener("click", () => {
   renderPlay();
 });
 
+function denyMessage(text) {
+  playSound("deny");
+  setMessage(text);
+}
+
 function toggleKnight(slot) {
   const player = state.players[state.currentPlayerIndex];
-  if (player.jokersUsed.includes(slot.id)) return setMessage("That knight is already used.");
-  if (!rollingOver()) return setMessage("Finish rolling before using a knight.");
+  if (player.jokersUsed.includes(slot.id)) return denyMessage("That knight is already used.");
+  if (!rollingOver()) return denyMessage("Finish rolling before using a knight.");
   const pending = state.jokerPending;
   state.goldPending = false;
   if (pending && pending.knightId === slot.id) state.jokerPending = null;
@@ -222,6 +227,7 @@ function renderDice() {
     el.addEventListener("click", () => {
       if (jokerMode) return useJoker(d);
       d.kept = !d.kept;
+      playSound("select");
       renderDice();
     });
     box.appendChild(el);
@@ -362,7 +368,9 @@ const FILE_SOUNDS = {
   knight: new Audio("sounds/knight.mp3"),
   turnEnd: new Audio("sounds/end-turn.mp3"),
   trade: new Audio("sounds/trade.mp3"),
-  menu: new Audio("sounds/menu-button.mp3")
+  menu: new Audio("sounds/menu-button.mp3"),
+  deny: new Audio("sounds/deny.mp3"),
+  select: new Audio("sounds/select.mp3")
 };
 Object.values(FILE_SOUNDS).forEach((a) => { a.preload = "auto"; a.load(); });
 
@@ -496,14 +504,14 @@ function buildSlot(slotId) {
   const player = state.players[state.currentPlayerIndex];
   const slot = ISLAND_ONE.buildSlots.find((s) => s.id === slotId);
   if (!slot || state.turnNumber > CONSTANTS.turnsPerPlayer) return;
-  if (!rollingOver()) return setMessage("Finish rolling before building.");
+  if (!rollingOver()) return denyMessage("Finish rolling before building.");
   const st = slotState(player, slot);
   if (st === "built") return slot.type === "knight" ? toggleKnight(slot) : undefined;
-  if (st === "locked") return setMessage("That slot is locked: build in ascending order, next to a built road.");
+  if (st === "locked") return denyMessage("That slot is locked: build in ascending order, next to a built road.");
   const cost = CONSTANTS.buildCosts[slot.type];
   const counts = countDice();
   const missing = Object.keys(cost).filter((r) => counts[r.toUpperCase()] < cost[r]);
-  if (missing.length) return setMessage("Not enough resources for a " + slot.type + ".");
+  if (missing.length) return denyMessage("Not enough resources for a " + slot.type + ".");
   Object.keys(cost).forEach((r) => {
     const f = r.toUpperCase();
     state.spent[f] = (state.spent[f] || 0) + cost[r];
