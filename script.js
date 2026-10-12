@@ -544,7 +544,7 @@ function sparkle(slotId) {
     out += '<path d="M0-' + sz + 'Q0 0 ' + sz + ' 0Q0 0 0 ' + sz + 'Q0 0-' + sz + ' 0Q0 0 0-' + sz + 'Z" transform="translate(' +
       (cx + Math.cos(a) * r).toFixed(1) + " " + (cy + Math.sin(a) * r).toFixed(1) + ')" style="animation-delay:' + (i % 3) * 0.08 + 's"/>';
   }
-  const map = document.getElementById("map");
+  const map = document.querySelector("#map svg");
   map.insertAdjacentHTML("beforeend", out + "</g>");
   const g = map.lastElementChild;
   setTimeout(() => g.remove(), 1000);
