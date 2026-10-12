@@ -537,12 +537,12 @@ function sparkle(slotId) {
   const el = document.querySelector('#map [data-wb="' + slotId + '"]');
   if (!el) return;
   const b = el.getBBox();
-  const cx = b.x + b.width / 2, cy = b.y + b.height / 2, r = Math.max(b.width, b.height) / 2 + 22;
-  const colors = ["#ffe27a", "#ff7a59", "#fff", "#7ad7ff"];
+  const cx = b.x + b.width / 2, cy = b.y + b.height / 2, r = Math.max(b.width, b.height) / 2 + 12;
+  const colors = ["#ffd54a", "#ffe27a", "#f5b700"];
   let out = '<g class="sparkle">';
   for (let i = 0; i < 14; i++) {
     const a = (i / 14) * Math.PI * 2, d = r * (i % 2 ? 0.75 : 1);
-    out += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + (i % 2 ? 3 : 4.5) + '" fill="' + colors[i % 4] +
+    out += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + (i % 2 ? 3 : 4.5) + '" fill="' + colors[i % 3] +
       '" style="--dx:' + (Math.cos(a) * d).toFixed(1) + "px;--dy:" + (Math.sin(a) * d).toFixed(1) + 'px"/>';
   }
   const map = document.querySelector("#map svg");

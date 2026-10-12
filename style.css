@@ -421,7 +421,7 @@ body:has(#play.active) #end-game { display: block; }
 @keyframes deny-wiggle { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-8deg); } 40% { transform: rotate(8deg); } 60% { transform: rotate(-5deg); } 80% { transform: rotate(5deg); } }
 
 #map .sparkle circle { pointer-events: none; animation: firework 0.7s cubic-bezier(0.1, 0.7, 0.3, 1) both; }
-@keyframes firework { 0% { translate: 0 0; opacity: 1; scale: 1; } 70% { opacity: 1; } 100% { translate: var(--dx) var(--dy); opacity: 0; scale: 0.3; } }
+@keyframes firework { 0% { translate: 0 0; opacity: 1; } 70% { opacity: 1; } 100% { translate: var(--dx) var(--dy); opacity: 0; } }
 
 #splash-die.shrink { animation: splash-shrink 0.7s ease-in forwards; }
 @keyframes splash-shrink { to { transform: scale(0.05); opacity: 0; } }
