@@ -101,7 +101,7 @@ function rollDice() {
   const timer = setInterval(() => {
     state.dice.forEach((d) => { if (!d.kept) d.value = randomFace(); });
     renderDice();
-    if (++ticks >= 8) {
+    if (++ticks >= 19) { // 19 x 60ms ~ length of dice-shake.mp3
       clearInterval(timer);
       state.rolling = false;
       if (state.rollCount >= CONSTANTS.maxRollsPerTurn) state.dice.forEach((d) => { d.kept = false; });
@@ -152,6 +152,7 @@ function useJoker(die) {
   die.value = face;
   player.jokersUsed.push(knightId);
   state.jokerPending = null;
+  playSound("knight");
   setMessage("Knight used.");
   renderPlay();
 }
@@ -317,8 +318,21 @@ const SOUNDS = {
   win: [[523, 0], [659, 0.15], [784, 0.3], [1047, 0.45]]
 };
 
+const FILE_SOUNDS = {
+  roll: new Audio("sounds/dice-shake.mp3"),
+  build: new Audio("sounds/build.mp3"),
+  knight: new Audio("sounds/knight.mp3"),
+  turnEnd: new Audio("sounds/end-turn.mp3")
+};
+Object.values(FILE_SOUNDS).forEach((a) => { a.preload = "auto"; a.load(); });
+
 function playSound(name) {
   if (!state.soundOn) return;
+  if (FILE_SOUNDS[name]) {
+    FILE_SOUNDS[name].currentTime = name === "build" ? 0.09 : 0; // build.mp3 opens with ~0.1s of silence
+    FILE_SOUNDS[name].play().catch(() => {});
+    return;
+  }
   try {
     audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
     const t0 = audioCtx.currentTime;
@@ -379,7 +393,7 @@ function buildSlot(slotId) {
   player.builtSlotIds.push(slot.id);
   player.score += slot.pointValue;
   state.builtThisTurn++;
-  playSound("build");
+  playSound(slot.type === "knight" ? "knight" : "build");
   setMessage("Built " + slot.type + " for " + slot.pointValue + " point" + (slot.pointValue === 1 ? "" : "s") + ".");
   renderPlay();
 }

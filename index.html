@@ -56,7 +56,9 @@
 
     <section id="play" class="screen">
       <div class="turn-head">
+        <button class="sound-toggle corner" aria-label="Toggle sound"></button>
         <h2 id="turn-player"></h2>
+        <button id="end-game" aria-label="End game" title="End game">✕</button>
       </div>
       <div id="map-wrap">
         <div id="map"></div>
@@ -72,7 +74,6 @@
         <button id="roll">Roll</button>
         <button id="end-turn">End Turn</button>
       </div>
-      <button class="sound-toggle corner" aria-label="Toggle sound"></button>
     </section>
 
     <section id="scorecard" class="screen">
@@ -90,7 +91,6 @@
       <button data-go="menu">Back</button>
     </section>
   </main>
-  <button id="end-game" aria-label="End game" title="End game">✕</button>
   <script src="data/constants.js"></script>
   <script src="data/island-one.js"></script>
   <script src="script.js"></script>

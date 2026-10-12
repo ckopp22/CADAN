@@ -16,7 +16,7 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: radial-gradient(ellipse at center, var(--parchment) 40%, var(--parchment-dark) 100%) fixed;
+  background: var(--parchment-dark) url("ui/bg_parchment_tile.png");
   color: var(--ink);
   font-family: "Lora", Georgia, serif;
 }
@@ -64,6 +64,25 @@ button {
 
 button:active { transform: translateY(2px); }
 
+/* Medieval UI kit: royal banner buttons (die, stepper, trade, corner and seal buttons override below) */
+button {
+  box-sizing: border-box;
+  min-height: 60px;
+  padding: 0 14px 2px;
+  color: #fbe9b0;
+  text-shadow: 0 2px 0 #3a0a10, 0 0 8px rgba(0, 0, 0, 0.4);
+  background: none;
+  border: solid transparent;
+  border-width: 24px;
+  border-image: url("ui/btn_royal_normal.png") 48 fill / 24px stretch;
+  box-shadow: none;
+  clip-path: none;
+  -webkit-tap-highlight-color: transparent;
+}
+button:not(.die):not(.trade-btn):not(.corner):not(#gold-trade):not(#end-game):not(#fewer):not(#more):hover:not(:disabled) { border-image-source: url("ui/btn_royal_hover.png"); }
+button:not(.die):not(.trade-btn):not(.corner):not(#gold-trade):not(#end-game):not(#fewer):not(#more):active:not(:disabled) { border-image-source: url("ui/btn_royal_pressed.png"); transform: none; padding: 2px 14px 0; }
+button:not(.die):not(.trade-btn):not(.corner):not(#gold-trade):not(#end-game):not(#fewer):not(#more):disabled { border-image-source: url("ui/btn_royal_disabled.png"); color: #b9a98c; cursor: not-allowed; }
+
 /* Wax-seal stepper buttons */
 .stepper { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
 .stepper span { flex: 1; }
@@ -99,6 +118,7 @@ input:focus { outline: none; border-color: var(--green); }
 .text p { margin: 0 0 0.8rem; }
 
 button:disabled { opacity: 0.5; }
+button:not(.die):not(.trade-btn):not(.corner):not(#gold-trade):not(#end-game):not(#fewer):not(#more):disabled { opacity: 1; }
 
 .chip {
   padding: 0.3rem 0.6rem;
@@ -137,6 +157,7 @@ button.die:disabled { opacity: 1; }
 
 
 button.trade-btn {
+  border: 2px solid var(--green);
   min-height: 44px;
   margin: 0;
   padding: 0;
@@ -161,7 +182,13 @@ button.die.spent { opacity: 0.3; }
 
 #map g.active path.shape { stroke: var(--red); stroke-width: 8; }
 #map .slot { cursor: pointer; }
-#message { position: absolute; left: 3cqw; bottom: 3cqw; max-width: 60cqw; margin: 0; padding: 0.2rem 0.5rem; font-size: 0.85rem; font-weight: 700; color: var(--red); background: rgba(251, 243, 220, 0.85); border-radius: 6px; pointer-events: none; }
+#message {
+  position: absolute; left: 3cqw; bottom: 3cqw; max-width: 70cqw; min-height: 64px; box-sizing: border-box; margin: 0; padding: 0.2rem 4px;
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  font-size: 0.8rem; font-weight: 700; color: var(--ink);
+  border: solid transparent; border-width: 0 28px; border-image: url("ui/scroll_banner.png") 0 90 fill / 0 28px stretch;
+  pointer-events: none;
+}
 #message:empty { display: none; }
 
 
@@ -187,7 +214,7 @@ img.ico { object-fit: contain; }
 #map g.slot path.shape { stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
 #map g.slot .line { fill: none; stroke: #3b2a1a; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
 
-.turn-head { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.4rem; }
+.turn-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
 .turn-head h2 { flex: 1; margin: 0; }
 .key-row { display: flex; align-items: center; gap: 3px; gap: 0.8cqw; padding: 1px 0; padding: 0.1cqw 0; }
 .key-row .struct { width: 18px; height: 18px; width: 5cqw; height: 5cqw; flex: none; }
@@ -243,9 +270,7 @@ img.ico { object-fit: contain; }
 
 #end-game, .sound-toggle.corner {
   display: none;
-  position: absolute;
-  top: calc(8px + env(safe-area-inset-top));
-  z-index: 50;
+  flex: none;
   width: 32px;
   height: 32px;
   min-height: 0;
@@ -255,12 +280,31 @@ img.ico { object-fit: contain; }
   border-radius: 50%;
   clip-path: none;
   margin: 0;
+  color: var(--ink);
+  background: rgba(241, 227, 192, 0.7);
+  border: 1px solid var(--parchment-dark);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  opacity: 0.8;
 }
 
 body:has(#play.active) #end-game { display: block; }
 
-#end-game { right: 8px; }
-.sound-toggle.corner { left: 8px; display: block; }
+#end-game {
+  display: none;
+  width: 44px;
+  height: 44px;
+  font-size: 0;
+  color: transparent;
+  text-shadow: none;
+  background: url("ui/seal_red_sword_normal.png") center / contain no-repeat;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  opacity: 1;
+}
+#end-game:hover { background-image: url("ui/seal_red_sword_hover.png"); }
+#end-game:active { background-image: url("ui/seal_red_sword_pressed.png"); transform: translateY(1px); padding: 0; }
+.sound-toggle.corner { display: block; }
 
 .roll-row { position: relative; }
 .roll-row #end-turn { position: absolute; top: 0; right: 0; bottom: 0; width: 25%; min-height: 0; margin: 0; padding: 0 0.4rem; font-size: 0.8rem; border: 3px solid var(--gold); }
