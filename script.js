@@ -657,3 +657,28 @@ if ("serviceWorker" in navigator && location.hostname !== "localhost") {
 
 // iOS Safari ignores user-scalable=no, so block pinch zoom explicitly
 ["gesturestart", "gesturechange"].forEach((t) => document.addEventListener(t, (e) => e.preventDefault()));
+
+// Share the game link: native share sheet where available, otherwise copy it
+function showToast(text) {
+  const old = document.getElementById("toast");
+  if (old) old.remove();
+  const el = document.createElement("div");
+  el.id = "toast";
+  el.textContent = text;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2000);
+}
+document.getElementById("share-btn").addEventListener("click", async () => {
+  const url = location.protocol === "file:" ? location.href : location.origin + location.pathname;
+  playSound("menu");
+  if (navigator.share) {
+    try { await navigator.share({ title: "CADAN", text: "Play CADAN with me!", url }); } catch (e) { /* share cancelled */ }
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(url);
+    showToast("Link copied!");
+  } catch (e) {
+    prompt("Copy this link to share:", url);
+  }
+});
