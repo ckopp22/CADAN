@@ -416,8 +416,6 @@ body:has(#play.active) #end-game { display: block; }
 }
 #audio-toggles button:active { transform: translateY(1px); padding: 0; }
 
-#map .wb.wobble { transform-box: fill-box; transform-origin: center; animation: build-wobble 2.5s ease-in-out infinite; }
-@keyframes build-wobble { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
 
 #splash-die.shrink { animation: splash-shrink 0.7s ease-in forwards; }
 @keyframes splash-shrink { to { transform: scale(0.05); opacity: 0; } }
