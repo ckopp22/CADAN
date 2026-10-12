@@ -533,6 +533,23 @@ function rollingOver() {
   return state.rollCount > 0 && (state.stopped || state.rollCount >= CONSTANTS.maxRollsPerTurn);
 }
 
+function sparkle(slotId) {
+  const el = document.querySelector('#map [data-wb="' + slotId + '"]');
+  if (!el) return;
+  const b = el.getBBox();
+  const cx = b.x + b.width / 2, cy = b.y + b.height / 2, r = Math.max(b.width, b.height) / 2 + 10;
+  let out = '<g class="sparkle">';
+  for (let i = 0; i < 8; i++) {
+    const a = (i / 8) * Math.PI * 2, sz = i % 2 ? 9 : 14;
+    out += '<path d="M0-' + sz + 'Q0 0 ' + sz + ' 0Q0 0 0 ' + sz + 'Q0 0-' + sz + ' 0Q0 0 0-' + sz + 'Z" transform="translate(' +
+      (cx + Math.cos(a) * r).toFixed(1) + " " + (cy + Math.sin(a) * r).toFixed(1) + ')" style="animation-delay:' + (i % 3) * 0.08 + 's"/>';
+  }
+  const map = document.getElementById("map");
+  map.insertAdjacentHTML("beforeend", out + "</g>");
+  const g = map.lastElementChild;
+  setTimeout(() => g.remove(), 1000);
+}
+
 function buildSlot(slotId) {
   const player = state.players[state.currentPlayerIndex];
   const slot = ISLAND_ONE.buildSlots.find((s) => s.id === slotId);
@@ -555,6 +572,7 @@ function buildSlot(slotId) {
   playSound(slot.type === "knight" ? "knight" : "build");
   setMessage("Built " + slot.type + " for " + slot.pointValue + " point" + (slot.pointValue === 1 ? "" : "s") + ".");
   renderPlay();
+  sparkle(slot.id);
 }
 
 document.getElementById("map").addEventListener("click", (e) => {
