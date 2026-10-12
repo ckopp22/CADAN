@@ -620,3 +620,6 @@ document.getElementById("end-turn").addEventListener("click", () => {
 if ("serviceWorker" in navigator && location.hostname !== "localhost") {
   window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js").catch(() => {}));
 }
+
+// iOS Safari ignores user-scalable=no, so block pinch zoom explicitly
+["gesturestart", "gesturechange"].forEach((t) => document.addEventListener(t, (e) => e.preventDefault()));
