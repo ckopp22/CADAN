@@ -152,9 +152,16 @@ document.getElementById("gold-trade").addEventListener("click", () => {
   renderPlay();
 });
 
-function denyMessage(text) {
+function denyMessage(text, slotId) {
   playSound("deny");
   setMessage(text);
+  const el = slotId && document.querySelector('#map [data-wb="' + slotId + '"]');
+  if (el) {
+    el.classList.remove("deny-wiggle");
+    void el.getBoundingClientRect();
+    el.classList.add("deny-wiggle");
+    el.addEventListener("animationend", () => el.classList.remove("deny-wiggle"), { once: true });
+  }
 }
 
 function toggleKnight(slot) {
@@ -530,14 +537,14 @@ function buildSlot(slotId) {
   const player = state.players[state.currentPlayerIndex];
   const slot = ISLAND_ONE.buildSlots.find((s) => s.id === slotId);
   if (!slot || state.turnNumber > CONSTANTS.turnsPerPlayer) return;
-  if (!rollingOver()) return denyMessage("Finish rolling before building.");
+  if (!rollingOver()) return denyMessage("Finish rolling before building.", slot.id);
   const st = slotState(player, slot);
   if (st === "built") return slot.type === "knight" ? toggleKnight(slot) : undefined;
-  if (st === "locked") return denyMessage("That slot is locked: build in ascending order, next to a built road.");
+  if (st === "locked") return denyMessage("That slot is locked: build in ascending order, next to a built road.", slot.id);
   const cost = CONSTANTS.buildCosts[slot.type];
   const counts = countDice();
   const missing = Object.keys(cost).filter((r) => counts[r.toUpperCase()] < cost[r]);
-  if (missing.length) return denyMessage("Not enough resources for a " + slot.type + ".");
+  if (missing.length) return denyMessage("Not enough resources for a " + slot.type + ".", slot.id);
   Object.keys(cost).forEach((r) => {
     const f = r.toUpperCase();
     state.spent[f] = (state.spent[f] || 0) + cost[r];
