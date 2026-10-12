@@ -601,8 +601,10 @@ document.getElementById("start").addEventListener("click", () => {
   showScreen("play");
 });
 
+let lastRanked = [];
 function showScorecard() {
   const ranked = state.players.slice().sort((a, b) => b.score - a.score);
+  lastRanked = ranked;
   const top = ranked[0].score;
   const winners = ranked.filter((p) => p.score === top);
   startResultsMusic();
@@ -680,5 +682,96 @@ document.getElementById("share-btn").addEventListener("click", async () => {
     showToast("Link copied!");
   } catch (e) {
     prompt("Copy this link to share:", url);
+  }
+});
+
+// Share the final score as a parchment image (native share sheet, or a download as fallback)
+function loadImage(src) {
+  return new Promise((ok, fail) => {
+    const img = new Image();
+    img.onload = () => ok(img);
+    img.onerror = fail;
+    img.src = src;
+  });
+}
+
+function fitText(ctx, text, maxWidth, size, weight, family) {
+  for (let s = size; s >= 20; s -= 2) {
+    ctx.font = weight + " " + s + "px " + family;
+    if (ctx.measureText(text).width <= maxWidth) return;
+  }
+}
+
+async function buildShareImage(url) {
+  const W = 1080, H = 1350, SERIF = '"Lora", Georgia, serif', DECOR = '"Cinzel Decorative", Georgia, serif';
+  try { await Promise.all([document.fonts.load('700 100px ' + DECOR), document.fonts.load('700 40px ' + SERIF)]); } catch (e) { /* fonts optional */ }
+  const [tile, panel, divider] = await Promise.all(["ui/bg_parchment_tile.png", "ui/panel_parchment.png", "ui/divider.png"].map(loadImage));
+  const canvas = document.createElement("canvas");
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = ctx.createPattern(tile, "repeat");
+  ctx.fillRect(0, 0, W, H);
+  // nine-slice the parchment panel (72px slices, drawn 100px wide)
+  const px = 40, py = 40, pw = W - 80, ph = H - 80, sl = 72, b = 100, iw = panel.width, ih = panel.height;
+  const xs = [[0, sl, px, b], [sl, iw - 2 * sl, px + b, pw - 2 * b], [iw - sl, sl, px + pw - b, b]];
+  const ys = [[0, sl, py, b], [sl, ih - 2 * sl, py + b, ph - 2 * b], [ih - sl, sl, py + ph - b, b]];
+  ys.forEach(([sy, sh, dy, dh]) => xs.forEach(([sx, sw, dx, dw]) => ctx.drawImage(panel, sx, sy, sw, sh, dx, dy, dw, dh)));
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#8b2e2e";
+  ctx.font = "700 130px " + DECOR;
+  ctx.fillText("CADAN", W / 2, 290);
+  ctx.drawImage(divider, W / 2 - 280, 320, 560, 41);
+  const top = lastRanked[0].score;
+  const winners = lastRanked.filter((p) => p.score === top);
+  const headline = lastRanked.length === 1 ? lastRanked[0].name + " scored " + top + "!"
+    : winners.length === 1 ? winners[0].name + " wins!" : "Tie: " + winners.map((p) => p.name).join(" & ");
+  ctx.fillStyle = "#3b2a1a";
+  fitText(ctx, headline, 700, 64, "700", SERIF);
+  ctx.fillText(headline, W / 2, 450);
+  ctx.font = "700 30px " + SERIF;
+  ctx.fillText("FINAL STANDINGS", W / 2, 510);
+  let rank = 0;
+  lastRanked.slice(0, 6).forEach((p, i) => {
+    if (i === 0 || p.score !== lastRanked[i - 1].score) rank = i + 1;
+    const y = 610 + i * 78;
+    ctx.fillStyle = p.score === top ? "#2f5d3a" : "#3b2a1a";
+    ctx.textAlign = "left";
+    fitText(ctx, rank + ". " + p.name, 520, 44, "700", SERIF);
+    ctx.fillText(rank + ". " + p.name, 220, y);
+    ctx.textAlign = "right";
+    ctx.font = "700 48px " + SERIF;
+    ctx.fillText(String(p.score), 860, y);
+  });
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#8b2e2e";
+  ctx.font = "700 38px " + SERIF;
+  ctx.fillText("Can you beat that?", W / 2, 1120);
+  ctx.fillStyle = "#3b2a1a";
+  fitText(ctx, url, 640, 28, "400", SERIF);
+  ctx.fillText(url, W / 2, 1165);
+  return new Promise((ok, fail) => canvas.toBlob((blob) => (blob ? ok(blob) : fail()), "image/png"));
+}
+
+document.getElementById("share-score").addEventListener("click", async () => {
+  const url = location.protocol === "file:" ? location.href : location.origin + location.pathname;
+  const top = lastRanked.length ? lastRanked[0].score : 0;
+  const text = "I scored " + top + " points in CADAN! Can you beat it? " + url;
+  playSound("menu");
+  let file = null;
+  try { file = new File([await buildShareImage(url)], "cadan-score.png", { type: "image/png" }); } catch (e) { /* image unavailable: share text only */ }
+  if (navigator.share) {
+    const data = file && navigator.canShare && navigator.canShare({ files: [file] }) ? { files: [file], text } : { text };
+    try { await navigator.share(data); } catch (e) { /* share cancelled */ }
+    return;
+  }
+  if (file) {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(file);
+    a.download = file.name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    showToast("Score image saved!");
+  } else {
+    try { await navigator.clipboard.writeText(text); showToast("Message copied!"); } catch (e) { prompt("Copy this message to share:", text); }
   }
 });
