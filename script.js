@@ -537,17 +537,18 @@ function sparkle(slotId) {
   const el = document.querySelector('#map [data-wb="' + slotId + '"]');
   if (!el) return;
   const b = el.getBBox();
-  const cx = b.x + b.width / 2, cy = b.y + b.height / 2, r = Math.max(b.width, b.height) / 2 + 10;
+  const cx = b.x + b.width / 2, cy = b.y + b.height / 2, r = Math.max(b.width, b.height) / 2 + 22;
+  const colors = ["#ffe27a", "#ff7a59", "#fff", "#7ad7ff"];
   let out = '<g class="sparkle">';
-  for (let i = 0; i < 8; i++) {
-    const a = (i / 8) * Math.PI * 2, sz = i % 2 ? 9 : 14;
-    out += '<path d="M0-' + sz + 'Q0 0 ' + sz + ' 0Q0 0 0 ' + sz + 'Q0 0-' + sz + ' 0Q0 0 0-' + sz + 'Z" transform="translate(' +
-      (cx + Math.cos(a) * r).toFixed(1) + " " + (cy + Math.sin(a) * r).toFixed(1) + ')" style="animation-delay:' + (i % 3) * 0.08 + 's"/>';
+  for (let i = 0; i < 14; i++) {
+    const a = (i / 14) * Math.PI * 2, d = r * (i % 2 ? 0.75 : 1);
+    out += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + (i % 2 ? 3 : 4.5) + '" fill="' + colors[i % 4] +
+      '" style="--dx:' + (Math.cos(a) * d).toFixed(1) + "px;--dy:" + (Math.sin(a) * d).toFixed(1) + 'px"/>';
   }
   const map = document.querySelector("#map svg");
   map.insertAdjacentHTML("beforeend", out + "</g>");
   const g = map.lastElementChild;
-  setTimeout(() => g.remove(), 1000);
+  setTimeout(() => g.remove(), 800);
 }
 
 function buildSlot(slotId) {
