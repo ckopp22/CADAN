@@ -1,7 +1,7 @@
-const CACHE = "cadan-v83";
+const CACHE = "cadan-v85";
 const SHELL = [
   "./", "index.html", "style.css", "script.js", "manifest.json",
-  "sounds/dice-shake.mp3", "sounds/build.mp3", "ui/bg_parchment_tile.png", "ui/scroll_banner.png", "ui/panel_parchment.png", "ui/divider.png", "ui/dice_tap_to_roll.webp", "ui/dice_roll.webp", "ui/btn_royal_normal.png", "ui/btn_royal_hover.png", "ui/btn_royal_pressed.png", "ui/btn_royal_disabled.png", "ui/seal_red_sword_normal.png", "ui/seal_red_sword_hover.png", "ui/seal_red_sword_pressed.png", "sounds/knight.mp3", "sounds/fanfare.mp3", "sounds/trade.mp3", "sounds/menu-button.mp3", "sounds/deny.mp3", "sounds/select.mp3", "sounds/scoreboard.mp3", "sounds/whistler.mp3", "sounds/medieval_whistle_loop.mp3", "sounds/gameplay_1_tavern_jig.mp3", "sounds/end-turn.mp3", "data/constants.js", "data/island-one.js",
+  "sounds/dice-shake.mp3", "sounds/build.mp3", "ui/bg_parchment_tile.png", "ui/scroll_banner.png", "ui/panel_parchment.png", "ui/divider.png", "ui/dice_tap_to_roll.webp", "ui/dice_roll.webp", "ui/btn_royal_normal.png", "ui/btn_royal_hover.png", "ui/btn_royal_pressed.png", "ui/btn_royal_disabled.png", "ui/seal_red_sword_normal.png", "ui/seal_red_sword_hover.png", "ui/seal_red_sword_pressed.png", "sounds/knight.mp3", "sounds/fanfare.mp3", "sounds/trade.mp3", "sounds/select.mp3", "sounds/deny.mp3", "sounds/nope.mp3", "sounds/scoreboard.mp3", "sounds/whistler.mp3", "sounds/medieval_whistle_loop.mp3", "sounds/gameplay_1_tavern_jig.mp3", "sounds/end-turn.mp3", "data/constants.js", "data/island-one.js",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png",
   "icons/res-brick.png", "icons/res-lumber.png", "icons/res-wool.png", "icons/res-grain.png",
   "icons/res-ore.png", "icons/res-gold.png", "icons/res-any.png",

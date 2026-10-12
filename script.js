@@ -368,9 +368,9 @@ const FILE_SOUNDS = {
   knight: new Audio("sounds/knight.mp3"),
   turnEnd: new Audio("sounds/end-turn.mp3"),
   trade: new Audio("sounds/trade.mp3"),
-  menu: new Audio("sounds/menu-button.mp3"),
-  deny: new Audio("sounds/deny.mp3"),
-  select: new Audio("sounds/select.mp3")
+  menu: new Audio("sounds/select.mp3"),
+  deny: new Audio("sounds/nope.mp3"),
+  select: new Audio("sounds/deny.mp3")
 };
 Object.values(FILE_SOUNDS).forEach((a) => { a.preload = "auto"; a.load(); });
 
