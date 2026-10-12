@@ -331,8 +331,8 @@ body:has(#play.active) #end-game { display: block; }
   position: absolute;
   right: 0.5rem;
   bottom: 1.5rem;
-  width: 52px;
-  height: 52px;
+  width: 68px;
+  height: 68px;
   min-height: 0;
   margin: 0;
   padding: 6px;
@@ -344,7 +344,7 @@ body:has(#play.active) #end-game { display: block; }
 }
 #map-wrap #gold-trade[hidden] { display: none; }
 #map-wrap #gold-trade img { width: 100%; height: 100%; object-fit: contain; }
-#map-wrap #gold-trade b { position: absolute; top: -6px; right: -6px; background: var(--red); color: #fff; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; line-height: 20px; }
+#map-wrap #gold-trade b { position: absolute; top: -6px; right: -6px; background: var(--red); color: #fff; border-radius: 50%; width: 24px; height: 24px; font-size: 14px; line-height: 24px; }
 #map-wrap #gold-trade.active { border-color: var(--red); background: var(--gold); }
 @keyframes pop { 0% { transform: scale(0.4); } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
 #map image.pick { cursor: pointer; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5)); }
