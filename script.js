@@ -374,10 +374,36 @@ const FILE_SOUNDS = {
 };
 Object.values(FILE_SOUNDS).forEach((a) => { a.preload = "auto"; a.load(); });
 
+// Seconds of leading silence in each file, skipped on playback (measured from the decoded audio)
+const SOUND_START = { roll: 0.02, build: 0.113, knight: 0.02, turnEnd: 0.02, trade: 0.305, menu: 0.008, deny: 0.096, select: 0.008 };
+
+// Decoded buffers start instantly; the Audio elements are the fallback (e.g. file:// or before audio is unlocked)
+const SOUND_BUFFERS = {};
+try {
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  Object.keys(FILE_SOUNDS).forEach((name) => {
+    fetch(FILE_SOUNDS[name].src).then((r) => r.arrayBuffer())
+      .then((data) => new Promise((ok, fail) => audioCtx.decodeAudioData(data, ok, fail)))
+      .then((buf) => { SOUND_BUFFERS[name] = buf; })
+      .catch(() => {});
+  });
+  ["pointerdown", "keydown"].forEach((t) => document.addEventListener(t, () => {
+    if (audioCtx.state === "suspended") audioCtx.resume();
+  }, { passive: true }));
+} catch (e) { /* Web Audio unavailable */ }
+
 function playSound(name) {
   if (!state.soundOn) return;
   if (FILE_SOUNDS[name]) {
-    FILE_SOUNDS[name].currentTime = name === "build" ? 0.09 : 0; // build.mp3 opens with ~0.1s of silence
+    const start = SOUND_START[name] || 0;
+    if (SOUND_BUFFERS[name] && audioCtx.state === "running") {
+      const src = audioCtx.createBufferSource();
+      src.buffer = SOUND_BUFFERS[name];
+      src.connect(audioCtx.destination);
+      src.start(0, start);
+      return;
+    }
+    FILE_SOUNDS[name].currentTime = start;
     FILE_SOUNDS[name].play().catch(() => {});
     return;
   }
@@ -439,7 +465,7 @@ FANFARE.addEventListener("ended", playScoreboard);
 function startResultsMusic() {
   resultsActive = true;
   music.pause();
-  FANFARE.pause(); FANFARE.currentTime = 0;
+  FANFARE.pause(); FANFARE.currentTime = 0.028; // skip leading silence
   SCOREBOARD.pause(); SCOREBOARD.currentTime = 0;
   if (state.soundOn) FANFARE.play().catch(() => {});
   else playScoreboard();
