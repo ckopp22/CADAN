@@ -9,7 +9,7 @@
   --stone: #6b6b66;
 }
 
-html { height: 100%; overflow: hidden; touch-action: manipulation; background: var(--parchment-dark) url("ui/bg_parchment.jpg") center / cover no-repeat; }
+html { height: 100%; min-height: 100vh; min-height: 100lvh; overflow: hidden; touch-action: manipulation; background: var(--parchment-dark) url("ui/bg_parchment.jpg") center / cover no-repeat; }
 
 body {
   margin: 0;
