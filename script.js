@@ -714,7 +714,7 @@ document.getElementById("end-game").addEventListener("click", () => {
 
 document.getElementById("end-turn").addEventListener("click", () => {
   const player = state.players[state.currentPlayerIndex];
-  if (state.builtThisTurn === 0) {
+  if (state.builtThisTurn === 0 && !state.jackpot) {
     player.xCount++;
     player.score += CONSTANTS.xPenalty;
   }
