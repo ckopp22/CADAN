@@ -557,7 +557,11 @@ const ROLL_ANIM = new Image();
   const dieReady = die.decode ? die.decode().catch(() => {}) : Promise.resolve();
   const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
   Promise.all([dieReady, fontsReady]).then(reveal);
-  setTimeout(reveal, 3000);
+  setTimeout(reveal, 700);
+  // Swap the still for the animated die once it has loaded (same first frame)
+  const anim = new Image();
+  anim.onload = () => { if (!die.classList.contains("rolling")) die.src = anim.src; };
+  anim.src = "ui/dice_tap_to_roll.webp";
 })();
 // Warm the cache so the map and dice icons don't pop in on the first game
 ["brick", "lumber", "wool", "grain", "ore", "any"].forEach((r) => { new Image().src = "icons/tile-" + r + ".png"; });
