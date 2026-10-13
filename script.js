@@ -376,13 +376,13 @@ const FILE_SOUNDS = {
   turnEnd: new Audio("sounds/end-turn.mp3"),
   trade: new Audio("sounds/trade.mp3"),
   menu: new Audio("sounds/select.mp3"),
-  deny: new Audio("sounds/nope.mp3"),
-  select: new Audio("sounds/deny.mp3")
+  deny: new Audio("sounds/deny.mp3"),
+  select: new Audio("sounds/nope.mp3")
 };
 Object.values(FILE_SOUNDS).forEach((a) => { a.preload = "auto"; a.load(); });
 
 // Seconds of leading silence in each file, skipped on playback (measured from the decoded audio)
-const SOUND_START = { roll: 0.02, build: 0.113, knight: 0.02, turnEnd: 0.02, trade: 0.305, menu: 0.008, deny: 0.096, select: 0.008 };
+const SOUND_START = { roll: 0.02, build: 0.113, knight: 0.02, turnEnd: 0.02, trade: 0.305, menu: 0.008, deny: 0.008, select: 0.096 };
 
 // Decoded buffers start instantly; the Audio elements are the fallback (e.g. file:// or before audio is unlocked)
 const SOUND_BUFFERS = {};
