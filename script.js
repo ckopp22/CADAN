@@ -297,7 +297,7 @@ function buildKey() {
 buildKey();
 
 let waveNext = false;
-function renderMap(player) {
+function mapSvg(player) {
   const wave = waveNext; waveNext = false;
   const L = ISLAND_ONE.layout, V = L.vertices, r = L.hexRadius;
   let svg = '<svg viewBox="5 440 1060 1224" xmlns="http://www.w3.org/2000/svg"><rect x="-100" y="0" width="1300" height="1800" fill="#8fc1d4"/>';
@@ -356,7 +356,11 @@ function renderMap(player) {
         '" y="' + (cy - ht / 2).toFixed(0) + '" width="' + w + '" height="' + ht.toFixed(0) + '"/>';
     });
   }
-  document.getElementById("map").innerHTML = svg + "</svg>";
+  return svg + "</svg>";
+}
+
+function renderMap(player) {
+  document.getElementById("map").innerHTML = mapSvg(player);
 }
 
 // Sound effects (Web Audio, no files) and the persistent sound toggle
@@ -731,8 +735,32 @@ function fitText(ctx, text, maxWidth, size, weight, family) {
   }
 }
 
+function blobToDataUrl(blob) {
+  return new Promise((ok, fail) => {
+    const fr = new FileReader();
+    fr.onload = () => ok(fr.result);
+    fr.onerror = fail;
+    fr.readAsDataURL(blob);
+  });
+}
+
+// The winner's finished map as an image: tiles inlined as data URIs and slot colours inlined as CSS, since an SVG image can't use the page's files or styles
+async function loadMapImage(player) {
+  let svg = mapSvg(player);
+  const hrefs = Array.from(new Set(svg.match(/icons\/tile-[a-z]+\.png/g)));
+  const uris = await Promise.all(hrefs.map((h) => fetch(h).then((r) => r.blob()).then(blobToDataUrl)));
+  hrefs.forEach((h, i) => { svg = svg.split('href="' + h + '"').join('href="' + uris[i] + '"'); });
+  const css = "rect.road{stroke:#c9ccce;stroke-width:4}rect.road.locked{fill:#b9bcbf;opacity:.8}rect.road.buildable{fill:#8a8d90}rect.road.built{fill:#2f5d3a}" +
+    "g.slot text{fill:#3b2a1a;font-family:Georgia,serif;font-weight:700}g.locked path.shape{fill:#b9bcbf;stroke:#6b6b66;stroke-width:6;opacity:.85}" +
+    "g.buildable path.shape{fill:#8a8d90;stroke:#4a4a46;stroke-width:8}g.built path.shape{fill:#2f5d3a;stroke:#d4a017;stroke-width:6}g.built text{fill:#f1e3c0}" +
+    "g.slot path.shape{stroke-linejoin:round;stroke-linecap:round}g.slot .line{fill:none;stroke:#3b2a1a;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}";
+  svg = svg.replace("<svg ", '<svg width="1060" height="1224" ').replace(">", "><style>" + css + "</style>");
+  const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
+  try { return await loadImage(url); } finally { URL.revokeObjectURL(url); }
+}
+
 async function buildShareImage(url) {
-  const W = 1080, H = 1350, SERIF = '"Lora", Georgia, serif', DECOR = '"Cinzel Decorative", Georgia, serif';
+  const W = 1080, H = 2120, SERIF = '"Lora", Georgia, serif', DECOR = '"Cinzel Decorative", Georgia, serif';
   try { await Promise.all([document.fonts.load('700 100px ' + DECOR), document.fonts.load('700 40px ' + SERIF)]); } catch (e) { /* fonts optional */ }
   const [tile, panel, divider] = await Promise.all(["ui/bg_parchment_tile.png", "ui/panel_parchment.png", "ui/divider.png"].map(loadImage));
   const canvas = document.createElement("canvas");
@@ -772,12 +800,24 @@ async function buildShareImage(url) {
     ctx.fillText(String(p.score), 860, y);
   });
   ctx.textAlign = "center";
+  try {
+    const player = lastRanked[0];
+    const map = await loadMapImage(player);
+    const mw = 640, mh = Math.round(mw * 1224 / 1060), mx = (W - mw) / 2, my = 1115;
+    ctx.fillStyle = "#3b2a1a";
+    fitText(ctx, player.name + "'s island", 700, 34, "700", SERIF);
+    ctx.fillText(player.name + "'s island", W / 2, 1075);
+    ctx.drawImage(map, mx, my, mw, mh);
+    ctx.strokeStyle = "#d4a017";
+    ctx.lineWidth = 6;
+    ctx.strokeRect(mx, my, mw, mh);
+  } catch (e) { /* map unavailable: share the scores only */ }
   ctx.fillStyle = "#8b2e2e";
   ctx.font = "700 38px " + SERIF;
-  ctx.fillText("Can you beat that?", W / 2, 1120);
+  ctx.fillText("Can you beat that?", W / 2, 1990);
   ctx.fillStyle = "#3b2a1a";
   fitText(ctx, url, 640, 28, "400", SERIF);
-  ctx.fillText(url, W / 2, 1165);
+  ctx.fillText(url, W / 2, 2035);
   return new Promise((ok, fail) => canvas.toBlob((blob) => (blob ? ok(blob) : fail()), "image/png"));
 }
 
