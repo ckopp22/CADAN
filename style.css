@@ -464,3 +464,14 @@ body:has(#menu.active) #share-btn { display: block; }
 /* Main menu: very blurry, enlarged picture of the board behind the panel */
 html:has(:is(#menu, #leaderboards, #how, #setup).active) { background: #8fc1d4 url("ui/menu_bg.jpg") center / cover no-repeat; }
 body:has(:is(#menu, #leaderboards, #how, #setup).active) { background: none; }
+
+#jackpot { position: fixed; inset: 0; z-index: 60; overflow: hidden; pointer-events: none; }
+#jackpot i { position: absolute; top: -12px; width: 9px; height: 14px; animation: confetti-fall linear both; }
+@keyframes confetti-fall { to { transform: translate(var(--dx), 110vh) rotate(720deg); } }
+#jackpot div {
+  position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%); white-space: nowrap;
+  padding: 0.8rem 1.4rem; font: 700 1.6rem "Cinzel Decorative", Georgia, serif; color: var(--parchment);
+  background: var(--red-dark); border: 3px solid var(--gold); border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5); animation: jackpot-pop 0.5s ease-out both;
+}
+@keyframes jackpot-pop { from { transform: translate(-50%, -50%) scale(0.2); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }

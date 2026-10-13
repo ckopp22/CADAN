@@ -86,7 +86,7 @@ document.querySelectorAll("[data-go]").forEach((b) =>
 
 // Game state and turn shell
 const state = { players: [], currentPlayerIndex: 0, turnNumber: 1, soundOn: true,
-  dice: [], rollCount: 0, stopped: false, rolling: false, spent: {}, jokerPending: null, goldPending: false, builtThisTurn: 0 };
+  dice: [], rollCount: 0, stopped: false, rolling: false, spent: {}, jokerPending: null, goldPending: false, builtThisTurn: 0, jackpot: false };
 
 const DIE_ICONS = {};
 CONSTANTS.dieFaces.forEach((f) => {
@@ -102,6 +102,7 @@ function resetDice() {
   state.jokerPending = null;
   state.goldPending = false;
   state.builtThisTurn = 0;
+  state.jackpot = false;
   setMessage("");
 }
 
@@ -124,8 +125,37 @@ function rollDice() {
       state.rolling = false;
       if (state.rollCount >= CONSTANTS.maxRollsPerTurn) state.dice.forEach((d) => { d.kept = false; });
       renderDice();
+      checkJackpot();
     }
   }, 60);
+}
+
+// Six of a kind on the table: 25 points once per turn, with fanfare, confetti and a banner
+function checkJackpot() {
+  if (state.jackpot || !state.dice.every((d) => d.value && d.value === state.dice[0].value)) return;
+  state.jackpot = true;
+  const player = state.players[state.currentPlayerIndex];
+  player.score += CONSTANTS.jackpotPoints;
+  document.getElementById("score").textContent = player.score;
+  if (state.soundOn) {
+    const snd = new Audio("sounds/fanfare.mp3");
+    snd.volume = 0.8; snd.currentTime = 0.028;
+    snd.play().catch(() => {});
+  }
+  const colors = ["#b8923a", "#a63a3a", "#2f5d3a", "#f3d98a", "#4a7fb0"];
+  const wrap = document.createElement("div");
+  wrap.id = "jackpot";
+  for (let i = 0; i < 70; i++) {
+    const c = document.createElement("i");
+    c.style.cssText = "left:" + Math.random() * 100 + "%;background:" + colors[i % colors.length] +
+      ";animation-delay:" + Math.random() * 0.8 + "s;animation-duration:" + (1.8 + Math.random() * 1.4) + "s;--dx:" + (Math.random() * 120 - 60) + "px";
+    wrap.appendChild(c);
+  }
+  const msg = document.createElement("div");
+  msg.textContent = "Jackpot- " + CONSTANTS.jackpotPoints + " Points!";
+  wrap.appendChild(msg);
+  document.body.appendChild(wrap);
+  setTimeout(() => wrap.remove(), 3500);
 }
 
 function countDice() {

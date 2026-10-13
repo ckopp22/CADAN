@@ -9,5 +9,6 @@ const CONSTANTS = {
   goldTradeRate: 2,
   maxRollsPerTurn: 3,
   turnsPerPlayer: 15,
-  xPenalty: -2
+  xPenalty: -2,
+  jackpotPoints: 25
 };
