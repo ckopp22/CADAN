@@ -381,7 +381,8 @@ body:has(#play.active) #end-game { display: block; }
 #audio-toggles button { margin: 0; }
 #play .turn-head { padding-left: 80px; }
 
-#splash { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+#splash { cursor: pointer; -webkit-tap-highlight-color: transparent; opacity: 0; transition: opacity 0.35s; }
+#splash.ready { opacity: 1; }
 #splash-die { display: block; width: 100%; max-width: 300px; height: auto; margin: 0.5rem auto; }
 
 #menu { margin: 0 -1rem 1rem; padding: 2.5rem 1rem; }

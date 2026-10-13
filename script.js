@@ -512,8 +512,23 @@ document.addEventListener("visibilitychange", () => {
 });
 
 // Splash: tap the die to roll it, which also unlocks audio, then go to the menu
+// Reveal the splash only once the die and fonts are ready, then fetch the roll animation
 const ROLL_ANIM = new Image();
-ROLL_ANIM.src = "ui/dice_roll.webp";
+(function () {
+  const splash = document.getElementById("splash");
+  const die = document.getElementById("splash-die");
+  let done = false;
+  const reveal = () => {
+    if (done) return;
+    done = true;
+    splash.classList.add("ready");
+    ROLL_ANIM.src = "ui/dice_roll.webp";
+  };
+  const dieReady = die.decode ? die.decode().catch(() => {}) : Promise.resolve();
+  const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
+  Promise.all([dieReady, fontsReady]).then(reveal);
+  setTimeout(reveal, 3000);
+})();
 // Warm the cache so the map and dice icons don't pop in on the first game
 ["brick", "lumber", "wool", "grain", "ore", "any"].forEach((r) => { new Image().src = "icons/tile-" + r + ".png"; });
 ["brick", "lumber", "wool", "grain", "ore", "gold", "any"].forEach((r) => { new Image().src = "icons/res-" + r + ".png"; });
