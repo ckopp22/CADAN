@@ -20,7 +20,7 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: var(--parchment-dark) url("ui/bg_parchment_tile.png");
+  background: none;
   color: var(--ink);
   font-family: "Lora", Georgia, serif;
 }
