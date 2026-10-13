@@ -240,7 +240,7 @@ function renderDice() {
     box.appendChild(el);
   });
   const over = state.stopped || state.rollCount >= CONSTANTS.maxRollsPerTurn;
-  renderTally(over);
+  renderTally(over && !state.rolling);
   refreshWobble();
   const rollBtn = document.getElementById("roll");
   rollBtn.textContent = (state.rollCount === 0 ? "Roll" : "Roll Again") + " (" + Math.min(state.rollCount + 1, CONSTANTS.maxRollsPerTurn) + "/" + CONSTANTS.maxRollsPerTurn + ")";
