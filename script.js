@@ -510,6 +510,9 @@ document.addEventListener("visibilitychange", () => {
 // Splash: tap the die to roll it, which also unlocks audio, then go to the menu
 const ROLL_ANIM = new Image();
 ROLL_ANIM.src = "ui/dice_roll.webp";
+// Warm the cache so the map and dice icons don't pop in on the first game
+["brick", "lumber", "wool", "grain", "ore", "any"].forEach((r) => { new Image().src = "icons/tile-" + r + ".png"; });
+["brick", "lumber", "wool", "grain", "ore", "gold", "any"].forEach((r) => { new Image().src = "icons/res-" + r + ".png"; });
 document.addEventListener("click", function (e) {
   if (!document.getElementById("splash").classList.contains("active") || e.target.closest("#audio-toggles")) return;
   const die = document.getElementById("splash-die");
