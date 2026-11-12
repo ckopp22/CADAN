@@ -766,7 +766,19 @@ document.getElementById("end-turn").addEventListener("click", () => {
 });
 
 if ("serviceWorker" in navigator && location.hostname !== "localhost") {
-  window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js").catch(() => {}));
+  // A new version installs in the background; offer a reload instead of interrupting a game
+  const hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadController || document.getElementById("update-banner")) return;
+    const bar = document.createElement("div");
+    bar.id = "update-banner";
+    bar.innerHTML = "<span>A new version is ready.</span><button>Reload</button>";
+    bar.querySelector("button").addEventListener("click", () => location.reload());
+    document.body.appendChild(bar);
+  });
+  window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js").then((reg) => {
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) reg.update().catch(() => {}); });
+  }).catch(() => {}));
 }
 
 // iOS Safari ignores user-scalable=no, so block pinch zoom explicitly
