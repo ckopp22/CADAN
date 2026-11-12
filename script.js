@@ -31,6 +31,26 @@ function renderLeaderboard() {
   document.getElementById("leaderboard-list").innerHTML = results.length
     ? results.map((r) => '<div class="chip standing">' + r.name + " <small>" + r.date + "</small><b>" + r.score + "</b></div>").join("")
     : "<p>No games saved yet.</p>";
+  const st = loadJSON("cadan-stats", { bot: {}, friend: 0 });
+  document.getElementById("leaderboard-list").innerHTML += "<h3>Record</h3>" +
+    ["easy", "medium", "hard"].map((d) => {
+      const r = st.bot[d] || { w: 0, l: 0, t: 0 };
+      return '<div class="chip standing">vs Bot (' + d[0].toUpperCase() + d.slice(1) + ")<b>" + r.w + "W - " + r.l + "L" + (r.t ? " - " + r.t + "T" : "") + "</b></div>";
+    }).join("") + '<div class="chip standing">Wins vs Friends<b>' + (st.friend || 0) + "</b></div>";
+}
+
+// Win/loss record for finished bot games and wins in finished online games
+function recordResult() {
+  if (state.turnNumber <= CONSTANTS.turnsPerPlayer || state.players.length !== 2) return;
+  const bot = state.players.find((p) => p.isBot);
+  if (!bot && !online) return;
+  const me = bot ? state.players[0] : state.players[online.me], other = state.players.find((p) => p !== me);
+  const st = loadJSON("cadan-stats", { bot: {}, friend: 0 });
+  if (bot) {
+    const r = st.bot[bot.difficulty] = st.bot[bot.difficulty] || { w: 0, l: 0, t: 0 };
+    if (me.score > other.score) r.w++; else if (me.score < other.score) r.l++; else r.t++;
+  } else if (me.score > other.score) st.friend = (st.friend || 0) + 1;
+  saveJSON("cadan-stats", st);
 }
 
 function showScreen(id) {
@@ -693,6 +713,7 @@ function showScorecard() {
   lastRanked = ranked;
   const top = ranked[0].score;
   const winners = ranked.filter((p) => p.score === top);
+  recordResult();
   startResultsMusic();
   document.getElementById("play-again").dataset.go = state.players.some((p) => p.isBot) ? "bot-setup" : online ? "competitive" : "setup";
   document.getElementById("winner").textContent = winners.length === 1
