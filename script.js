@@ -35,6 +35,7 @@ function renderLeaderboard() {
 
 function showScreen(id) {
   if (id !== "scorecard") stopResultsMusic();
+  if (id !== "play") botToken++;
   if (id === "leaderboards") renderLeaderboard();
   document.querySelectorAll(".screen").forEach((s) => s.classList.toggle("active", s.id === id));
   window.scrollTo(0, 0);
@@ -466,7 +467,7 @@ function playSound(name) {
 }
 
 document.addEventListener("click", (e) => {
-  if (e.target.closest("button[data-go], #start, #play-bot, #play-friend, #save-result, #more, #fewer")) playSound("menu");
+  if (e.target.closest("button[data-go], #start, button[data-diff], #play-friend, #save-result, #more, #fewer")) playSound("menu");
 });
 
 function renderSoundToggles() {
@@ -690,6 +691,7 @@ function showScorecard() {
   const top = ranked[0].score;
   const winners = ranked.filter((p) => p.score === top);
   startResultsMusic();
+  document.getElementById("play-again").dataset.go = state.players.some((p) => p.isBot) ? "bot-setup" : "setup";
   document.getElementById("winner").textContent = winners.length === 1
     ? winners[0].name + " wins!"
     : "Tie: " + winners.map((p) => p.name).join(" & ");
@@ -733,6 +735,7 @@ document.getElementById("end-turn").addEventListener("click", () => {
   resetDice();
   waveNext = true;
   renderPlay();
+  maybeBotTurn();
 });
 
 if ("serviceWorker" in navigator && location.hostname !== "localhost") {
@@ -743,8 +746,7 @@ if ("serviceWorker" in navigator && location.hostname !== "localhost") {
 ["gesturestart", "gesturechange"].forEach((t) => document.addEventListener(t, (e) => e.preventDefault()));
 
 // Share the game link: native share sheet where available, otherwise copy it
-["play-bot", "play-friend"].forEach((id) =>
-  document.getElementById(id).addEventListener("click", () => showToast("Coming soon")));
+document.getElementById("play-friend").addEventListener("click", () => showToast("Coming soon"));
 
 function showToast(text) {
   const old = document.getElementById("toast");

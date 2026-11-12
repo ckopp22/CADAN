@@ -50,9 +50,17 @@
 
     <section id="competitive" class="screen">
       <h2>Competitive</h2>
-      <button id="play-bot">Play vs Bot</button>
+      <button data-go="bot-setup">Play vs Bot</button>
       <button id="play-friend">Play vs Friend</button>
       <button data-go="menu">Back</button>
+    </section>
+
+    <section id="bot-setup" class="screen">
+      <h2>Choose Difficulty</h2>
+      <button data-diff="easy">Easy</button>
+      <button data-diff="medium">Medium</button>
+      <button data-diff="hard">Hard</button>
+      <button data-go="competitive">Back</button>
     </section>
 
     <section id="how" class="screen">
@@ -113,7 +121,7 @@
       </div>
       <button id="save-result">Save to Leaderboard</button>
       <button id="share-score">Share Score</button>
-      <button data-go="setup">Play Again</button>
+      <button id="play-again" data-go="setup">Play Again</button>
       <button data-go="menu">Back to Menu</button>
     </section>
 
@@ -126,5 +134,6 @@
   <script src="data/constants.js"></script>
   <script src="data/island-one.js"></script>
   <script src="script.js"></script>
+  <script src="bot.js"></script>
 </body>
 </html>
