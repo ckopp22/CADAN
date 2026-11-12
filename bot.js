@@ -192,14 +192,15 @@ async function botTurn(token) {
 function maybeBotTurn() {
   const p = state.players[state.currentPlayerIndex];
   const on = !!(p && p.isBot && state.turnNumber <= CONSTANTS.turnsPerPlayer);
-  document.getElementById("play").classList.toggle("bot-turn", on);
+  document.getElementById("play").classList.toggle("bot-turn", on || (!!online && state.currentPlayerIndex !== online.me));
   if (on) botTurn(++botToken);
 }
 
+const makePlayer = (id, name, extra) => Object.assign({ id, name, score: 0, xCount: 0, builtSlotIds: ["road-1"], jokersUsed: [], turnsTaken: 0 }, extra);
+
 document.querySelectorAll("[data-diff]").forEach((b) => b.addEventListener("click", () => {
   const d = b.dataset.diff;
-  const mk = (id, name, extra) => Object.assign({ id, name, score: 0, xCount: 0, builtSlotIds: ["road-1"], jokersUsed: [], turnsTaken: 0 }, extra);
-  state.players = [mk("p1", "You"), mk("p2", "Bot (" + d[0].toUpperCase() + d.slice(1) + ")", { isBot: true, difficulty: d })];
+  state.players = [makePlayer("p1", "You"), makePlayer("p2", "Bot (" + d[0].toUpperCase() + d.slice(1) + ")", { isBot: true, difficulty: d })];
   state.currentPlayerIndex = 0;
   state.turnNumber = 1;
   resetDice();

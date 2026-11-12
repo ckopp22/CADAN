@@ -51,7 +51,7 @@
     <section id="competitive" class="screen">
       <h2>Competitive</h2>
       <button data-go="bot-setup">Play vs Bot</button>
-      <button id="play-friend">Play vs Friend</button>
+      <button data-go="friend">Play vs Friend</button>
       <button data-go="menu">Back</button>
     </section>
 
@@ -61,6 +61,22 @@
       <button data-diff="medium">Medium</button>
       <button data-diff="hard">Hard</button>
       <button data-go="competitive">Back</button>
+    </section>
+
+    <section id="friend" class="screen">
+      <h2>Play vs Friend</h2>
+      <input id="net-name" maxlength="16" placeholder="Your name" autocomplete="off">
+      <button id="create-room">Create Room</button>
+      <input id="room-code" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button id="join-room">Join Room</button>
+      <button data-go="competitive">Back</button>
+    </section>
+
+    <section id="lobby" class="screen">
+      <h2>Room Code</h2>
+      <div id="lobby-code"></div>
+      <p>Waiting for your friend to join...</p>
+      <button data-go="friend">Cancel</button>
     </section>
 
     <section id="how" class="screen">
@@ -133,7 +149,9 @@
   </main>
   <script src="data/constants.js"></script>
   <script src="data/island-one.js"></script>
+  <script src="lib/peerjs.min.js"></script>
   <script src="script.js"></script>
   <script src="bot.js"></script>
+  <script src="net.js"></script>
 </body>
 </html>

@@ -36,6 +36,7 @@ function renderLeaderboard() {
 function showScreen(id) {
   if (id !== "scorecard") stopResultsMusic();
   if (id !== "play") botToken++;
+  if (!["play", "scorecard", "lobby"].includes(id)) netClose();
   if (id === "leaderboards") renderLeaderboard();
   document.querySelectorAll(".screen").forEach((s) => s.classList.toggle("active", s.id === id));
   window.scrollTo(0, 0);
@@ -138,6 +139,7 @@ function checkJackpot() {
   const player = state.players[state.currentPlayerIndex];
   player.score += CONSTANTS.jackpotPoints;
   document.getElementById("score").textContent = player.score;
+  netSync();
   if (state.soundOn) {
     const snd = new Audio("sounds/fanfare.mp3");
     snd.volume = 0.8; snd.currentTime = 0.028;
@@ -271,6 +273,7 @@ function renderDice() {
     box.appendChild(el);
   });
   const over = state.stopped || state.rollCount >= CONSTANTS.maxRollsPerTurn;
+  netSync();
   renderTally(over && !state.rolling);
   refreshWobble();
   const rollBtn = document.getElementById("roll");
@@ -467,7 +470,7 @@ function playSound(name) {
 }
 
 document.addEventListener("click", (e) => {
-  if (e.target.closest("button[data-go], #start, button[data-diff], #play-friend, #save-result, #more, #fewer")) playSound("menu");
+  if (e.target.closest("button[data-go], #start, button[data-diff], #create-room, #join-room, #save-result, #more, #fewer")) playSound("menu");
 });
 
 function renderSoundToggles() {
@@ -691,7 +694,7 @@ function showScorecard() {
   const top = ranked[0].score;
   const winners = ranked.filter((p) => p.score === top);
   startResultsMusic();
-  document.getElementById("play-again").dataset.go = state.players.some((p) => p.isBot) ? "bot-setup" : "setup";
+  document.getElementById("play-again").dataset.go = state.players.some((p) => p.isBot) ? "bot-setup" : online ? "competitive" : "setup";
   document.getElementById("winner").textContent = winners.length === 1
     ? winners[0].name + " wins!"
     : "Tie: " + winners.map((p) => p.name).join(" & ");
@@ -715,7 +718,9 @@ function showScorecard() {
 }
 
 document.getElementById("end-game").addEventListener("click", () => {
-  if (confirm("End the game now and show the final standings?")) showScorecard();
+  if (!confirm("End the game now and show the final standings?")) return;
+  if (online && online.conn && online.conn.open) online.conn.send({ t: "end" });
+  showScorecard();
 });
 
 document.getElementById("end-turn").addEventListener("click", () => {
@@ -731,10 +736,11 @@ document.getElementById("end-turn").addEventListener("click", () => {
     state.currentPlayerIndex = 0;
     state.turnNumber++;
   }
-  if (state.turnNumber > CONSTANTS.turnsPerPlayer) return showScorecard();
+  if (state.turnNumber > CONSTANTS.turnsPerPlayer) { netSend(); return showScorecard(); }
   resetDice();
   waveNext = true;
   renderPlay();
+  netSend();
   maybeBotTurn();
 });
 
@@ -746,8 +752,6 @@ if ("serviceWorker" in navigator && location.hostname !== "localhost") {
 ["gesturestart", "gesturechange"].forEach((t) => document.addEventListener(t, (e) => e.preventDefault()));
 
 // Share the game link: native share sheet where available, otherwise copy it
-document.getElementById("play-friend").addEventListener("click", () => showToast("Coming soon"));
-
 function showToast(text) {
   const old = document.getElementById("toast");
   if (old) old.remove();
