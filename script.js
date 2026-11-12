@@ -466,7 +466,7 @@ function playSound(name) {
 }
 
 document.addEventListener("click", (e) => {
-  if (e.target.closest("button[data-go], #start, #save-result, #more, #fewer")) playSound("menu");
+  if (e.target.closest("button[data-go], #start, #play-bot, #play-friend, #save-result, #more, #fewer")) playSound("menu");
 });
 
 function renderSoundToggles() {
@@ -743,6 +743,9 @@ if ("serviceWorker" in navigator && location.hostname !== "localhost") {
 ["gesturestart", "gesturechange"].forEach((t) => document.addEventListener(t, (e) => e.preventDefault()));
 
 // Share the game link: native share sheet where available, otherwise copy it
+["play-bot", "play-friend"].forEach((id) =>
+  document.getElementById(id).addEventListener("click", () => showToast("Coming soon")));
+
 function showToast(text) {
   const old = document.getElementById("toast");
   if (old) old.remove();

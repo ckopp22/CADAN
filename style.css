@@ -359,9 +359,9 @@ body:has(#play.active) #end-game { display: block; }
 #map path.water-wave { fill: none; stroke: #fff; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; opacity: 0; animation: water-wave 1s linear both; }
 @keyframes water-wave { 0% { transform: translateX(0); opacity: 0; } 15%, 85% { opacity: 0.6; } 100% { transform: translateX(1672px); opacity: 0; } }
 
-#menu button { margin: 0.1rem 0; }
+#menu button, #competitive button { margin: 0.1rem 0; }
 
-#how .text, #leaderboard-list, #menu, #results-panel {
+#how .text, #leaderboard-list, #menu, #competitive, #results-panel {
   box-sizing: border-box;
   margin-bottom: 1rem;
   border: solid transparent;
@@ -385,7 +385,7 @@ body:has(#play.active) #end-game { display: block; }
 #splash.ready { opacity: 1; }
 #splash-die { display: block; width: 100%; max-width: 300px; height: auto; margin: 0.5rem auto; }
 
-#menu { margin: 0 -1rem 1rem; padding: 2.5rem 1rem; }
+#menu, #competitive { margin: 0 -1rem 1rem; padding: 2.5rem 1rem; }
 .divider { display: block; width: 80%; max-width: 260px; height: auto; margin: 0 auto 1rem; }
 
 #names input {
@@ -462,8 +462,8 @@ body:has(#menu.active) #share-btn { display: block; }
 }
 
 /* Main menu: very blurry, enlarged picture of the board behind the panel */
-html:has(:is(#menu, #leaderboards, #how, #setup).active) { background: #8fc1d4 url("ui/menu_bg.jpg") center / cover no-repeat; }
-body:has(:is(#menu, #leaderboards, #how, #setup).active) { background: none; }
+html:has(:is(#menu, #competitive, #leaderboards, #how, #setup).active) { background: #8fc1d4 url("ui/menu_bg.jpg") center / cover no-repeat; }
+body:has(:is(#menu, #competitive, #leaderboards, #how, #setup).active) { background: none; }
 
 #jackpot { position: fixed; inset: 0; z-index: 60; overflow: hidden; pointer-events: none; }
 #jackpot i { position: absolute; top: -12px; width: 9px; height: 14px; animation: confetti-fall linear both; }
